@@ -4,6 +4,18 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="FarDrive 远驱：足不出户，开向远方。远程驾驶真实场地的越野遥控赛车，探索从未点亮的黑暗森林。">
+<meta name="theme-color" content="#12233D">
+<meta property="og:title" content="FarDrive 远驱 · 足不出户，开向远方">
+<meta property="og:description" content="远程驾驶真实场地的越野遥控赛车——田园、森林、竹林、草原、沙地。地图是黑暗的，开过的路才会被点亮。">
+<meta property="og:image" content="https://aka.doubaocdn.com/s/oPcBf6sSB9">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_CN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FarDrive 远驱 · 足不出户，开向远方">
+<meta name="twitter:description" content="远程驾驶真实场地的越野遥控赛车，探索从未点亮的黑暗森林。">
+<meta name="twitter:image" content="https://aka.doubaocdn.com/s/oPcBf6sSB9">
+<link rel="preconnect" href="https://miaoda.feishu.cn" crossorigin>
+<link rel="preconnect" href="https://aka.doubaocdn.com">
 <title>FarDrive 远驱 · 足不出户，开向远方</title>
 <link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
 <style>
@@ -61,6 +73,33 @@
   .btn-ghost:hover{background:var(--navy);color:var(--paper);}
   .btn-light{background:#FFFFFF;color:var(--navy);}
   .btn-light:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.22);}
+
+  /* 移动端汉堡按钮 */
+  .menu-btn{
+    display:none;width:40px;height:40px;align-items:center;justify-content:center;
+    border:0;background:transparent;cursor:pointer;border-radius:8px;
+    color:var(--navy);
+  }
+  .menu-btn svg{width:22px;height:22px;}
+  .menu-btn:hover{background:rgba(18,35,61,.06);}
+
+  /* 移动端下拉菜单 */
+  .mobile-nav{
+    display:none;position:absolute;top:64px;left:0;right:0;
+    background:rgba(245,242,234,.98);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    padding:12px 0;z-index:40;
+  }
+  .mobile-nav.open{display:block;}
+  .mobile-nav a{
+    display:block;padding:12px 24px;font-size:15px;color:var(--navy2);
+    font-weight:500;
+  }
+  .mobile-nav a:hover{background:rgba(18,35,61,.05);color:var(--amber-deep);}
+  .mobile-nav .mobile-cta{
+    margin:10px 24px 4px;
+  }
+  .mobile-nav .mobile-cta .btn{width:100%;justify-content:center;}
 
   /* ===== Hero ===== */
   .hero{position:relative;overflow:hidden;background:var(--navy);}
@@ -303,12 +342,78 @@
 
   @media (max-width:860px){
     .topnav{display:none;}
+    .menu-btn{display:inline-flex;}
+    .topbar .btn{display:none;}
     section{padding:72px 0;}
     .darkforest .wrap{grid-template-columns:1fr;}
     .hero .wrap{padding-top:84px;padding-bottom:80px;}
     .stat + .stat{border-left:0;border-top:1px solid rgba(245,242,234,.18);padding-top:14px;margin-top:14px;}
     .hero-stats{gap:12px;}
     .stat{padding:0;}
+  }
+  /* ===== 表单 ===== */
+  .cta-form-wrap{
+    max-width:560px;margin:36px auto 0;
+    background:#FFFFFF;border:1px solid var(--line);border-radius:20px;
+    box-shadow:0 20px 50px rgba(18,35,61,.10);
+    overflow:hidden;
+  }
+  .form-tabs{
+    display:grid;grid-template-columns:1fr 1fr;
+    background:var(--paper2);
+  }
+  .form-tab{
+    padding:14px 16px;text-align:center;cursor:pointer;
+    font-size:14px;font-weight:500;color:var(--muted);
+    border-bottom:2px solid transparent;
+    transition:color .2s ease,border-color .2s ease,background .2s ease;
+  }
+  .form-tab.active{
+    color:var(--navy);background:#FFFFFF;
+    border-bottom-color:var(--amber);font-weight:700;
+  }
+  .form-body{padding:28px 28px 26px;}
+  .form-panel{display:none;}
+  .form-panel.active{display:block;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .form-field{margin-bottom:14px;}
+  .form-field label{
+    display:block;font-size:13px;font-weight:500;color:var(--navy);
+    margin-bottom:6px;
+  }
+  .form-field label .req{color:#D64545;margin-left:2px;}
+  .form-field input,
+  .form-field select,
+  .form-field textarea{
+    width:100%;padding:11px 14px;
+    font-family:var(--font-body);font-size:14px;color:var(--ink);
+    background:var(--paper);border:1.5px solid var(--line);
+    border-radius:10px;outline:none;
+    transition:border-color .2s ease,box-shadow .2s ease;
+    -webkit-appearance:none;appearance:none;
+  }
+  .form-field input:focus,
+  .form-field select:focus,
+  .form-field textarea:focus{
+    border-color:var(--amber);
+    box-shadow:0 0 0 3px rgba(232,163,61,.18);
+  }
+  .form-field textarea{resize:vertical;min-height:72px;}
+  .form-field input::placeholder,
+  .form-field textarea::placeholder{color:rgba(102,112,126,.55);}
+  .form-note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.6;}
+  .form-success{
+    display:none;text-align:center;padding:30px 20px;
+  }
+  .form-success svg{width:52px;height:52px;color:var(--green);margin-bottom:12px;}
+  .form-success b{display:block;font-family:var(--font-display);font-size:20px;color:var(--navy);margin-bottom:6px;}
+  .form-success span{font-size:13.5px;color:var(--muted);}
+  .form-submit-row{margin-top:6px;}
+  .form-submit-row .btn{width:100%;justify-content:center;}
+
+  @media (max-width:560px){
+    .form-body{padding:22px 20px 20px;}
+    .form-row{grid-template-columns:1fr;gap:0;}
   }
   @media (prefers-reduced-motion:reduce){
     html{scroll-behavior:auto;}
@@ -336,8 +441,25 @@
       <a href="#audience">为谁而做</a>
       <a href="#franchise">加盟</a>
     </nav>
-    <a class="btn btn-amber" href="app-preview.html">预约体验</a>
+    <a class="btn btn-amber" href="#cta">预约体验</a>
+    <button class="menu-btn" aria-label="菜单" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
   </div>
+  <!-- 移动端下拉菜单 -->
+  <nav class="mobile-nav" aria-label="移动端导航">
+    <a href="#play">玩法</a>
+    <a href="#terrains">真实场景</a>
+    <a href="#fleet">车型</a>
+    <a href="#entry">怎么玩</a>
+    <a href="#audience">为谁而做</a>
+    <a href="#franchise">加盟</a>
+    <div class="mobile-cta">
+      <a class="btn btn-amber" href="#cta">预约体验</a>
+    </div>
+  </nav>
 </header>
 
 <!-- ===== Hero ===== -->
@@ -378,7 +500,7 @@
     <div class="play-grid">
       <article class="play-card">
         <div class="imgbox">
-          <img src="https://aka.doubaocdn.com/s/CBb9WPnrpF" alt="越野车行驶在晨雾森林的林间土路">
+          <img src="https://aka.doubaocdn.com/s/CBb9WPnrpF" alt="越野车行驶在晨雾森林的林间土路" loading="lazy">
           <span class="tag solo">单人探索局</span>
         </div>
         <div class="body">
@@ -389,7 +511,7 @@
       </article>
       <article class="play-card">
         <div class="imgbox">
-          <img src="https://aka.doubaocdn.com/s/1gp4t6Tg1y" alt="两辆越野车在沙地竞速">
+          <img src="https://aka.doubaocdn.com/s/1gp4t6Tg1y" alt="两辆越野车在沙地竞速" loading="lazy">
           <span class="tag">双人比赛局</span>
         </div>
         <div class="body">
@@ -470,23 +592,23 @@
     <p class="sec-sub">加盟商把闲置的田园、森林、竹林、草原与沙地变成你的驾驶场。同一片土地，白天有人耕种，晚上有人在千里之外开着它。</p>
     <div class="terrain-grid">
       <figure class="terrain">
-        <img src="https://aka.doubaocdn.com/s/VxrIgZpMTP" alt="金色稻田间的越野车">
+        <img src="https://aka.doubaocdn.com/s/VxrIgZpMTP" alt="金色稻田间的越野车" loading="lazy">
         <figcaption class="cap"><b>田园</b><span>稻田田埂 · 金黄与土香</span></figcaption>
       </figure>
       <figure class="terrain">
-        <img src="https://aka.doubaocdn.com/s/CBb9WPnrpF" alt="晨雾森林里的越野车">
+        <img src="https://aka.doubaocdn.com/s/CBb9WPnrpF" alt="晨雾森林里的越野车" loading="lazy">
         <figcaption class="cap"><b>森林</b><span>林间土路 · 晨雾光束</span></figcaption>
       </figure>
       <figure class="terrain">
-        <img src="https://aka.doubaocdn.com/s/TlFvqkZVQA" alt="竹林小径上的越野车">
+        <img src="https://aka.doubaocdn.com/s/TlFvqkZVQA" alt="竹林小径上的越野车" loading="lazy">
         <figcaption class="cap"><b>竹林</b><span>翠竹夹道 · 光影斑驳</span></figcaption>
       </figure>
       <figure class="terrain">
-        <img src="https://aka.doubaocdn.com/s/MAEF7jriD9" alt="草原上飞驰的越野车">
+        <img src="https://aka.doubaocdn.com/s/MAEF7jriD9" alt="草原上飞驰的越野车" loading="lazy">
         <figcaption class="cap"><b>草原</b><span>风起草浪 · 天地开阔</span></figcaption>
       </figure>
       <figure class="terrain">
-        <img src="https://aka.doubaocdn.com/s/WwzISSVuLG" alt="沙丘上爬坡的越野车">
+        <img src="https://aka.doubaocdn.com/s/WwzISSVuLG" alt="沙丘上爬坡的越野车" loading="lazy">
         <figcaption class="cap"><b>沙地</b><span>沙丘爬坡 · 扬起尘土</span></figcaption>
       </figure>
     </div>
@@ -501,7 +623,7 @@
     <p class="sec-sub">全部为认证越野遥控赛车，自带电池与多路全景摄像头。品牌车、无标车均可入网，价格由加盟商按车与场地自主定价，平台审核。</p>
     <div class="fleet-grid">
       <article class="fleet">
-        <div class="imgbox"><img src="https://aka.doubaocdn.com/s/jwOMQvUr9b" alt="北京吉普212型越野遥控模型车"></div>
+        <div class="imgbox"><img src="https://aka.doubaocdn.com/s/jwOMQvUr9b" alt="北京吉普212型越野遥控模型车" loading="lazy"></div>
         <div class="body">
           <span class="tier">入门档</span>
           <h3>北京吉普 212 型</h3>
@@ -510,7 +632,7 @@
         </div>
       </article>
       <article class="fleet">
-        <div class="imgbox"><img src="https://aka.doubaocdn.com/s/ZrrRkURHCO" alt="切诺基型越野遥控模型车"></div>
+        <div class="imgbox"><img src="https://aka.doubaocdn.com/s/ZrrRkURHCO" alt="切诺基型越野遥控模型车" loading="lazy"></div>
         <div class="body">
           <span class="tier">中档</span>
           <h3>切诺基型</h3>
@@ -519,7 +641,7 @@
         </div>
       </article>
       <article class="fleet">
-        <div class="imgbox"><img src="https://aka.doubaocdn.com/s/t38XfTuQrh" alt="管架式岩石攀爬遥控模型车"></div>
+        <div class="imgbox"><img src="https://aka.doubaocdn.com/s/t38XfTuQrh" alt="管架式岩石攀爬遥控模型车" loading="lazy"></div>
         <div class="body">
           <span class="tier">攀爬专精</span>
           <h3>岩石攀爬车</h3>
@@ -528,7 +650,7 @@
         </div>
       </article>
       <article class="fleet">
-        <div class="imgbox"><img src="https://aka.doubaocdn.com/s/LyAhaA8Nss" alt="开放式沙漠卡丁遥控模型车"></div>
+        <div class="imgbox"><img src="https://aka.doubaocdn.com/s/LyAhaA8Nss" alt="开放式沙漠卡丁遥控模型车" loading="lazy"></div>
         <div class="body">
           <span class="tier">竞速型</span>
           <h3>沙漠卡丁车</h3>
@@ -537,7 +659,7 @@
         </div>
       </article>
       <article class="fleet">
-        <div class="imgbox"><img src="https://aka.doubaocdn.com/s/uMSayI1QSR" alt="高性能大脚越野遥控模型车"></div>
+        <div class="imgbox"><img src="https://aka.doubaocdn.com/s/uMSayI1QSR" alt="高性能大脚越野遥控模型车" loading="lazy"></div>
         <div class="body">
           <span class="tier">高性能</span>
           <h3>高性能大脚车</h3>
@@ -546,7 +668,7 @@
         </div>
       </article>
       <article class="fleet">
-        <div class="imgbox"><img src="https://aka.doubaocdn.com/s/7ypJhfSPZF" alt="豪华旅居越野遥控模型车"></div>
+        <div class="imgbox"><img src="https://aka.doubaocdn.com/s/7ypJhfSPZF" alt="豪华旅居越野遥控模型车" loading="lazy"></div>
         <div class="body">
           <span class="tier">旗舰</span>
           <h3>豪华旅居越野</h3>
@@ -605,7 +727,7 @@
     </div>
     <div class="aud-card-grid">
       <figure class="aud-card">
-        <img src="https://aka.doubaocdn.com/s/ky7gOlvr75" alt="老人在客厅通过电视远程驾驶">
+        <img src="https://aka.doubaocdn.com/s/ky7gOlvr75" alt="老人在客厅通过电视远程驾驶" loading="lazy">
         <div class="veil"></div>
         <span class="chip">出行受限者</span>
         <figcaption class="cap">
@@ -614,7 +736,7 @@
         </figcaption>
       </figure>
       <figure class="aud-card">
-        <img src="https://aka.doubaocdn.com/s/jfr2Yz8QWX" alt="养老院老人围坐大屏观看远程驾驶">
+        <img src="https://aka.doubaocdn.com/s/jfr2Yz8QWX" alt="养老院老人围坐大屏观看远程驾驶" loading="lazy">
         <div class="veil"></div>
         <span class="chip">机构场景</span>
         <figcaption class="cap">
@@ -623,7 +745,7 @@
         </figcaption>
       </figure>
       <figure class="aud-card">
-        <img src="https://aka.doubaocdn.com/s/333WK48DsB" alt="深夜写字楼加班族用笔记本远程驾驶">
+        <img src="https://aka.doubaocdn.com/s/333WK48DsB" alt="深夜写字楼加班族用笔记本远程驾驶" loading="lazy">
         <div class="veil"></div>
         <span class="chip">上班族</span>
         <figcaption class="cap">
@@ -632,7 +754,7 @@
         </figcaption>
       </figure>
       <figure class="aud-card">
-        <img src="https://aka.doubaocdn.com/s/53BAuPL2jV" alt="深夜书房里用方向盘外设远程驾驶">
+        <img src="https://aka.doubaocdn.com/s/53BAuPL2jV" alt="深夜书房里用方向盘外设远程驾驶" loading="lazy">
         <div class="veil"></div>
         <span class="chip">时间受限者</span>
         <figcaption class="cap">
@@ -641,7 +763,7 @@
         </figcaption>
       </figure>
       <figure class="aud-card">
-        <img src="https://aka.doubaocdn.com/s/xpTHEQyjmw" alt="年轻人在沙发上用手机远程驾驶越野车">
+        <img src="https://aka.doubaocdn.com/s/xpTHEQyjmw" alt="年轻人在沙发上用手机远程驾驶越野车" loading="lazy">
         <div class="veil"></div>
         <span class="chip">能力受限者</span>
         <figcaption class="cap">
@@ -650,7 +772,7 @@
         </figcaption>
       </figure>
       <figure class="aud-card">
-        <img src="https://aka.doubaocdn.com/s/VWXU7aE678" alt="玩家在电竞房里用方向盘大屏远程驾驶">
+        <img src="https://aka.doubaocdn.com/s/VWXU7aE678" alt="玩家在电竞房里用方向盘大屏远程驾驶" loading="lazy">
         <div class="veil"></div>
         <span class="chip">兴趣玩家</span>
         <figcaption class="cap">
@@ -741,6 +863,9 @@
         <p>212、切诺基、大脚车多档位车型任选，车型不同价格不同。一台场地，就是一家多品牌的"车行"。</p>
       </div>
     </div>
+    <div style="text-align:center;margin-top:36px;">
+      <a class="btn btn-amber" href="#cta" data-form="franchise">提交加盟意向 →</a>
+    </div>
     <p class="fr-note">以上数字为估算区间，以直营示范点实测数据校准后为准。详情见《加盟商招募与运营手册》。</p>
   </div>
 </section>
@@ -750,9 +875,102 @@
   <div class="wrap">
     <h2>世界在等你，<br>这次不用出门。</h2>
     <p>首批示范点正在建设中。留下联系方式，开放试驾时第一时间通知你；有场地的人，欢迎来谈谈加盟。</p>
-    <div class="btn-row">
-      <a class="btn btn-amber" href="app-preview.html">预约体验</a>
-      <a class="btn btn-ghost" href="#franchise">申请加盟</a>
+
+    <div class="cta-form-wrap">
+      <div class="form-tabs" role="tablist">
+        <div class="form-tab active" data-tab="trial" role="tab" aria-selected="true">预约试驾体验</div>
+        <div class="form-tab" data-tab="franchise" role="tab" aria-selected="false">申请加盟合作</div>
+      </div>
+      <div class="form-body">
+
+        <!-- 预约试驾 -->
+        <form class="form-panel active" data-panel="trial" novalidate>
+          <div class="form-row">
+            <div class="form-field">
+              <label>姓名<span class="req">*</span></label>
+              <input type="text" name="name" required placeholder="请输入您的称呼">
+            </div>
+            <div class="form-field">
+              <label>手机号<span class="req">*</span></label>
+              <input type="tel" name="phone" required placeholder="用于通知试驾开放">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label>所在城市</label>
+              <input type="text" name="city" placeholder="例如：杭州">
+            </div>
+            <div class="form-field">
+              <label>感兴趣的场景</label>
+              <select name="interest">
+                <option value="">请选择</option>
+                <option>田园</option>
+                <option>森林</option>
+                <option>竹林</option>
+                <option>草原</option>
+                <option>沙地</option>
+                <option>都想试试</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>想说的话</label>
+            <textarea name="message" placeholder="有什么想对我们说的？（选填）"></textarea>
+          </div>
+          <div class="form-submit-row">
+            <button type="submit" class="btn btn-amber">提交预约</button>
+          </div>
+          <p class="form-note">提交即表示同意我们与您联系。首批开放时，我们会按预约顺序通知。</p>
+        </form>
+
+        <!-- 申请加盟 -->
+        <form class="form-panel" data-panel="franchise" novalidate>
+          <div class="form-row">
+            <div class="form-field">
+              <label>姓名<span class="req">*</span></label>
+              <input type="text" name="name" required placeholder="您的称呼">
+            </div>
+            <div class="form-field">
+              <label>手机号<span class="req">*</span></label>
+              <input type="tel" name="phone" required placeholder="方便联系的号码">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-field">
+              <label>所在城市<span class="req">*</span></label>
+              <input type="text" name="city" required placeholder="场地所在城市">
+            </div>
+            <div class="form-field">
+              <label>意向类型</label>
+              <select name="ftype">
+                <option value="">请选择</option>
+                <option>C类 · 自然地形主理人</option>
+                <option>B类 · 沙盘设计爱好者</option>
+                <option>A类 · 场地改造主理人</option>
+                <option>还不确定，想聊聊</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>场地情况简述<span class="req">*</span></label>
+            <textarea name="message" required placeholder="简单描述一下场地位置、面积、地形类型，以及预计可投入的规模（选填也欢迎聊聊）"></textarea>
+          </div>
+          <div class="form-submit-row">
+            <button type="submit" class="btn btn-amber">提交加盟意向</button>
+          </div>
+          <p class="form-note">提交后 1-3 个工作日内，我们的加盟顾问会与您联系。信息严格保密，仅用于加盟沟通。</p>
+        </form>
+
+        <!-- 提交成功 -->
+        <div class="form-success">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          <b>提交成功！</b>
+          <span>我们已收到您的信息，<br>会尽快与您联系。</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -831,6 +1049,128 @@
       });
     }
     window.addEventListener("scroll", onScroll, {passive: true});
+  }
+
+  // ===== 表单 Tab 切换 =====
+  var formTabs = document.querySelectorAll(".form-tab");
+  var formPanels = document.querySelectorAll(".form-panel");
+  function switchForm(name){
+    formTabs.forEach(function(t){
+      var active = t.getAttribute("data-tab") === name;
+      t.classList.toggle("active", active);
+      t.setAttribute("aria-selected", active ? "true" : "false");
+    });
+    formPanels.forEach(function(p){
+      p.classList.toggle("active", p.getAttribute("data-panel") === name);
+    });
+  }
+  formTabs.forEach(function(tab){
+    tab.addEventListener("click", function(){
+      switchForm(tab.getAttribute("data-tab"));
+    });
+  });
+
+  // ===== 带 data-form 的链接自动切换表单 =====
+  document.querySelectorAll('a[data-form]').forEach(function(a){
+    a.addEventListener("click", function(e){
+      var target = a.getAttribute("data-form");
+      if (target) {
+        // 等滚动完成后再切换，给用户一个视觉反馈
+        setTimeout(function(){ switchForm(target); }, 300);
+      }
+    });
+  });
+
+  // ===== 表单提交（前端演示版：本地校验 + 成功态）=====
+  function validatePhone(phone){
+    return /^1[3-9]\d{9}$/.test(phone);
+  }
+  document.querySelectorAll('.form-panel').forEach(function(form){
+    form.addEventListener("submit", function(e){
+      e.preventDefault();
+      var fields = form.querySelectorAll("[required]");
+      var firstInvalid = null;
+      fields.forEach(function(f){
+        if (!f.value || !f.value.trim()) {
+          f.style.borderColor = "#D64545";
+          if (!firstInvalid) firstInvalid = f;
+        } else if (f.type === "tel" && !validatePhone(f.value.trim())) {
+          f.style.borderColor = "#D64545";
+          if (!firstInvalid) firstInvalid = f;
+        } else {
+          f.style.borderColor = "";
+        }
+      });
+      if (firstInvalid) {
+        firstInvalid.focus();
+        return;
+      }
+      // 收集数据（演示模式：输出到 console，实际项目应对接后端 API）
+      var data = {};
+      form.querySelectorAll("input, select, textarea").forEach(function(el){
+        if (el.name) data[el.name] = el.value;
+      });
+      data._type = form.getAttribute("data-panel");
+      console.log("[FarDrive] 表单提交:", data);
+
+      // 显示成功态
+      var wrap = form.closest(".cta-form-wrap");
+      form.parentElement.querySelectorAll(".form-panel").forEach(function(p){ p.classList.remove("active"); });
+      var success = wrap.querySelector(".form-success");
+      if (success) {
+        success.style.display = "block";
+        var tabs = wrap.querySelector(".form-tabs");
+        if (tabs) tabs.style.display = "none";
+      }
+    });
+    // 输入时清除错误状态
+    form.querySelectorAll("input, select, textarea").forEach(function(f){
+      f.addEventListener("input", function(){ f.style.borderColor = ""; });
+      f.addEventListener("change", function(){ f.style.borderColor = ""; });
+    });
+  });
+
+  // ===== URL hash 带 form 参数时自动切换 =====
+  if (window.location.hash && window.location.hash.indexOf("=") > -1) {
+    var parts = window.location.hash.split("=");
+    if (parts[0] === "#form" && parts[1]) {
+      switchForm(parts[1]);
+    }
+  }
+
+  // ===== 移动端汉堡菜单 =====
+  var menuBtn = document.querySelector(".menu-btn");
+  var mobileNav = document.querySelector(".mobile-nav");
+  if (menuBtn && mobileNav) {
+    function toggleMenu(open){
+      var willOpen = typeof open === "boolean" ? open : !mobileNav.classList.contains("open");
+      mobileNav.classList.toggle("open", willOpen);
+      menuBtn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+      // 切换汉堡图标为关闭图标
+      var svg = menuBtn.querySelector("svg");
+      if (svg) {
+        if (willOpen) {
+          svg.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+        } else {
+          svg.innerHTML = '<line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>';
+        }
+      }
+    }
+    menuBtn.addEventListener("click", function(){
+      toggleMenu();
+    });
+    // 点击菜单项后关闭
+    mobileNav.querySelectorAll("a").forEach(function(a){
+      a.addEventListener("click", function(){
+        toggleMenu(false);
+      });
+    });
+    // 点击页面其他区域关闭
+    document.addEventListener("click", function(e){
+      if (!mobileNav.classList.contains("open")) return;
+      if (mobileNav.contains(e.target) || menuBtn.contains(e.target)) return;
+      toggleMenu(false);
+    });
   }
 })();
 </script>
