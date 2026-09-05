@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="FarDrive 远驱 APP 原型展示：黑暗森林探索、选车、远程驾驶、双人比赛。下载 APP，足不出户，开向远方。">
+<title>FarDrive 远驱 · APP 原型展示</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<style>
+  :root{
+    --ink:#1A2230;
+    --navy:#12233D;
+    --navy2:#1E3A5F;
+    --paper:#F5F2EA;
+    --paper2:#EDE7D8;
+    --amber:#E8A33D;
+    --amber-deep:#C97F1F;
+    --muted:#66707E;
+    --line:rgba(18,35,61,.14);
+    --font-display:'Noto Serif SC','Songti SC','SimSun',serif;
+    --font-body:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:var(--font-body);color:var(--ink);background:var(--paper);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+
+  /* 顶栏 */
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(245,242,234,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;}
+  .brand svg{width:26px;height:26px;}
+  .brand .en{font-family:var(--font-display);font-weight:900;}
+  .brand .zh{color:var(--muted);font-weight:500;font-size:14px;}
+  .back{font-size:14px;color:var(--navy2);border:1.5px solid var(--navy);border-radius:999px;padding:8px 18px;font-weight:500;}
+  .back:hover{background:var(--navy);color:var(--paper);}
+
+  /* 页面主体 */
+  .app-hero{background:var(--navy);color:var(--paper);overflow:hidden;}
+  .app-hero .wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding-top:72px;padding-bottom:88px;}
+  .kicker{display:inline-flex;align-items:center;gap:10px;font-size:13px;letter-spacing:.18em;color:var(--amber);font-weight:700;margin-bottom:16px;}
+  .kicker::before{content:"";width:26px;height:2px;background:var(--amber);}
+  h1{font-family:var(--font-display);font-weight:900;font-size:clamp(30px,3.8vw,48px);line-height:1.2;}
+  .app-sub{margin-top:16px;max-width:480px;font-size:15px;color:rgba(245,242,234,.75);}
+  .app-points{margin-top:26px;display:grid;gap:12px;}
+  .ap{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:rgba(245,242,234,.82);}
+  .ap svg{flex-shrink:0;width:18px;height:18px;margin-top:2px;color:var(--amber);}
+  .dl-btn{
+    display:inline-flex;align-items:center;gap:10px;margin-top:34px;
+    background:var(--amber);color:#16233A;font-weight:700;font-size:17px;
+    border:0;border-radius:999px;padding:16px 38px;cursor:pointer;
+    transition:transform .18s ease,box-shadow .18s ease;
+  }
+  .dl-btn:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(232,163,61,.35);}
+  .dl-btn svg{width:20px;height:20px;}
+  .dl-hint{margin-top:12px;font-size:12px;color:rgba(245,242,234,.55);}
+
+  /* 手机原型 */
+  .phone-zone{display:flex;flex-direction:column;align-items:center;gap:18px;}
+  .phone{
+    width:330px;background:#0B1526;border-radius:44px;padding:12px;
+    border:2px solid rgba(255,255,255,.14);
+    box-shadow:0 40px 90px rgba(0,0,0,.5);
+  }
+  .phone-screen{background:#0E1930;border-radius:34px;overflow:hidden;position:relative;}
+  .phone-notch{height:26px;background:#0E1930;display:flex;justify-content:center;align-items:center;position:relative;z-index:3;}
+  .phone-notch::before{content:"";width:90px;height:18px;background:#060D1C;border-radius:0 0 14px 14px;position:absolute;top:0;}
+  .phone-body{background:#0E1930;}
+  .app-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 8px;color:#F5F2EA;}
+  .app-top .at-l{font-family:var(--font-display);font-weight:700;font-size:15px;}
+  .app-top .at-r{font-size:12px;color:var(--amber);}
+  .app-tabs{display:flex;gap:6px;padding:6px 12px 12px;}
+  .app-tabs button{
+    flex:1;font-family:var(--font-body);font-size:12px;font-weight:700;
+    background:rgba(255,255,255,.07);color:rgba(245,242,234,.65);
+    border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:7px 0;cursor:pointer;
+    transition:background .15s ease,color .15s ease;
+  }
+  .app-tabs button.on{background:var(--amber);color:#16233A;border-color:var(--amber);}
+  .app-stage{position:relative;min-height:420px;}
+  .app-screen{position:absolute;inset:0;padding:12px 14px;display:none;}
+  .app-screen.on{display:block;}
+
+  /* 界面1：地图 */
+  .map-screen{position:relative;height:100%;border-radius:18px;overflow:hidden;background:#0B1526;}
+  .map-screen svg{width:100%;height:100%;display:block;}
+  .map-ui{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:12px;}
+  .map-card{background:rgba(10,18,32,.85);border:1px solid rgba(232,163,61,.35);border-radius:12px;padding:10px 12px;color:#F5F2EA;}
+  .map-card .m1{display:flex;justify-content:space-between;font-size:11px;color:var(--amber);letter-spacing:.06em;}
+  .map-card .m2{font-size:12.5px;margin-top:4px;}
+  .map-card .m3{margin-top:6px;height:5px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden;}
+  .map-card .m3 i{display:block;height:100%;width:62%;background:var(--amber);border-radius:99px;}
+
+  /* 界面2：选车 */
+  .car-list{display:grid;gap:8px;}
+  .car-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:8px;}
+  .car-row img{width:56px;height:56px;object-fit:cover;border-radius:10px;}
+  .car-row .cn{flex:1;}
+  .car-row .cn b{display:block;font-size:13px;color:#F5F2EA;}
+  .car-row .cn span{font-size:11px;color:rgba(245,242,234,.6);}
+  .car-row .cp{font-size:12px;color:var(--amber);font-weight:700;}
+
+  /* 界面3：驾驶 */
+  .drive-scene{position:relative;height:100%;border-radius:18px;overflow:hidden;}
+  .drive-scene img{width:100%;height:100%;object-fit:cover;}
+  .drive-ui{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:10px;}
+  .drive-top{display:flex;gap:6px;justify-content:flex-end;}
+  .drive-top span{background:rgba(10,18,32,.75);color:#F5F2EA;font-size:10.5px;border-radius:999px;padding:4px 9px;}
+  .drive-bot{display:flex;align-items:flex-end;gap:10px;}
+  .drive-wheel{width:64px;height:64px;border-radius:50%;background:rgba(10,18,32,.8);border:2px solid rgba(232,163,61,.6);display:flex;align-items:center;justify-content:center;color:var(--amber);flex-shrink:0;}
+  .drive-wheel svg{width:34px;height:34px;}
+  .drive-pedals{flex:1;display:grid;gap:6px;}
+  .pedal{background:rgba(10,18,32,.8);border-radius:10px;padding:7px 10px;color:#F5F2EA;font-size:11px;display:flex;justify-content:space-between;align-items:center;}
+  .pedal i{display:block;height:4px;flex:0 0 55%;background:rgba(255,255,255,.14);border-radius:99px;overflow:hidden;margin-left:8px;}
+  .pedal.gas i::after{content:"";display:block;height:100%;width:45%;background:var(--amber);}
+  .pedal.brake i::after{content:"";display:block;height:100%;width:18%;background:#8B9BB4;}
+
+  /* 界面4：比赛 */
+  .race-ui{display:grid;gap:10px;}
+  .race-room{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 12px;color:#F5F2EA;}
+  .race-room .r1{display:flex;justify-content:space-between;font-size:12px;}
+  .race-room .r1 b{color:var(--amber);}
+  .race-room .r2{font-family:var(--font-display);font-size:26px;text-align:center;color:#FFFFFF;margin-top:4px;}
+  .race-rank{display:grid;gap:6px;}
+  .race-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border-radius:10px;padding:8px 12px;color:#F5F2EA;font-size:12.5px;}
+  .race-row.me{border:1px solid rgba(232,163,61,.5);}
+  .race-row .pos{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+  .race-row.me .pos{background:var(--amber);color:#16233A;}
+  .race-row .nm{flex:1;}
+  .race-row .tm{font-family:var(--font-display);font-weight:700;}
+  .race-row .st{font-size:10.5px;color:rgba(245,242,234,.55);}
+
+  .phone-tip{font-size:12.5px;color:var(--muted);text-align:center;}
+
+  /* 下载模态 */
+  .modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;background:rgba(8,14,26,.72);padding:24px;}
+  .modal.on{display:flex;}
+  .modal-card{background:#FFFFFF;border-radius:20px;max-width:400px;width:100%;padding:32px;text-align:center;}
+  .modal-card h3{font-family:var(--font-display);font-size:22px;font-weight:700;}
+  .modal-card p{font-size:13.5px;color:var(--muted);margin-top:10px;}
+  .modal-card input{
+    width:100%;margin-top:20px;padding:14px 16px;font-size:15px;font-family:var(--font-body);
+    border:1.5px solid var(--line);border-radius:12px;outline:none;color:var(--ink);
+  }
+  .modal-card input:focus{border-color:var(--amber);}
+  .modal-card .ok{
+    width:100%;margin-top:14px;padding:14px;font-family:var(--font-body);font-size:15px;font-weight:700;
+    background:var(--amber);color:#16233A;border:0;border-radius:999px;cursor:pointer;
+  }
+  .modal-card .ok:hover{background:var(--amber-deep);color:#FFFFFF;}
+  .modal-card .later{margin-top:10px;font-size:12.5px;color:var(--muted);cursor:pointer;background:none;border:0;font-family:var(--font-body);}
+  .modal-done{display:none;}
+  .modal-done.on{display:block;}
+  .modal-done .tick{width:52px;height:52px;border-radius:50%;background:rgba(232,163,61,.16);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+  .modal-done .tick svg{width:26px;height:26px;color:var(--amber-deep);}
+
+  footer{background:var(--navy);color:rgba(245,242,234,.6);padding:30px 0;font-size:12.5px;}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  footer a{color:var(--amber);}
+
+  @media (max-width:900px){
+    .app-hero .wrap{grid-template-columns:1fr;padding-top:56px;padding-bottom:64px;}
+    .phone{width:300px;}
+    .app-stage{min-height:400px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- 顶栏 -->
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="FarDrive 首页">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#12233D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="18" r="2.4"/>
+        <path d="M8.2 7.6 17 16.4"/><path d="M6 3.5V2M2.5 6H1M20.5 18v1.5M18 20.5H16.5"/>
+      </svg>
+      <span class="en">FarDrive</span><span class="zh">远驱</span>
+    </a>
+    <a class="back" href="index.html">返回首页</a>
+  </div>
+</header>
+
+<!-- 主体 -->
+<section class="app-hero">
+  <div class="wrap">
+    <div class="app-intro">
+      <span class="kicker">APP 原型展示</span>
+      <h1>整个远方，<br>装进一部手机</h1>
+      <p class="app-sub">地图探索、选车、远程驾驶、双人比赛，四个核心场景，一部 APP 全部搞定。以下为产品原型示意，最终界面以上线版本为准。</p>
+      <div class="app-points">
+        <div class="ap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l2.8 2.8M16.2 16.2 19 19M19 5l-2.8 2.8M7.8 16.2 5 19"/><circle cx="12" cy="12" r="4"/></svg>
+          <span>黑暗森林地图：开到哪里，哪里才亮</span>
+        </div>
+        <div class="ap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6 14.6 4a2 2 0 0 0-2.1 0L6.3 8.6a2 2 0 0 0-1 1.7v8.2a2 2 0 0 0 2 2h1.4a2 2 0 0 0 2-2V15a2 2 0 0 1 2-2h.6a2 2 0 0 1 2 2v3.5a2 2 0 0 0 2 2h1.4a2 2 0 0 0 2-2v-8.2a2 2 0 0 0-1-1.7z"/></svg>
+          <span>多档车型可选，价格一目了然</span>
+        </div>
+        <div class="ap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          <span>第一视角实时驾驶，方向盘就在屏幕里</span>
+        </div>
+        <div class="ap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg>
+          <span>两人即开赛，GPS 计时排名</span>
+        </div>
+      </div>
+      <button class="dl-btn" id="dlBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg>
+        下载 APP
+      </button>
+      <p class="dl-hint">当前为原型展示，点击预约下载，上线第一时间通知你</p>
+    </div>
+
+    <div class="phone-zone">
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="phone-notch"></div>
+          <div class="phone-body">
+            <div class="app-top">
+              <span class="at-l">FarDrive</span>
+              <span class="at-r">GPS 已连接</span>
+            </div>
+            <div class="app-tabs">
+              <button data-tab="map" class="on">地图</button>
+              <button data-tab="cars">选车</button>
+              <button data-tab="drive">驾驶</button>
+              <button data-tab="race">比赛</button>
+            </div>
+            <div class="app-stage">
+
+              <!-- 地图 -->
+              <div class="app-screen on" id="scr-map">
+                <div class="map-screen">
+                  <svg viewBox="0 0 300 396" role="img" aria-label="黑暗森林地图">
+                    <defs><radialGradient id="mg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#E8A33D" stop-opacity=".5"/><stop offset="100%" stop-color="#E8A33D" stop-opacity="0"/></radialGradient></defs>
+                    <rect width="300" height="396" fill="#0B1526"/>
+                    <g stroke="rgba(255,255,255,.06)" stroke-width="1">
+                      <line x1="0" y1="66" x2="300" y2="66"/><line x1="0" y1="132" x2="300" y2="132"/>
+                      <line x1="0" y1="198" x2="300" y2="198"/><line x1="0" y1="264" x2="300" y2="264"/><line x1="0" y1="330" x2="300" y2="330"/>
+                      <line x1="75" y1="0" x2="75" y2="396"/><line x1="150" y1="0" x2="150" y2="396"/><line x1="225" y1="0" x2="225" y2="396"/>
+                    </g>
+                    <path d="M30 340 C 80 300, 110 320, 150 270 S 220 190, 255 120 S 275 70, 272 46"
+                          fill="none" stroke="#E8A33D" stroke-width="3.5" stroke-linecap="round"/>
+                    <circle cx="30" cy="340" r="6" fill="#FFFFFF"/>
+                    <circle cx="272" cy="46" r="7" fill="#E8A33D"/>
+                    <text x="14" y="28" fill="#E8A33D" font-size="11" font-family="Noto Sans SC,sans-serif">黑暗森林</text>
+                  </svg>
+                  <div class="map-ui">
+                    <div class="map-card">
+                      <div class="m1"><span>探索局 · 田园站</span><span>已点亮 62%</span></div>
+                      <div class="m2">剩余电量 18:42 · 里程 2.3km</div>
+                      <div class="m3"><i></i></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 选车 -->
+              <div class="app-screen" id="scr-cars">
+                <div class="car-list">
+                  <div class="car-row">
+                    <img src="https://aka.doubaocdn.com/s/jwOMQvUr9b" alt="212型">
+                    <div class="cn"><b>北京吉普 212 型</b><span>入门 · 扎实耐造</span></div>
+                    <div class="cp">¥15/场</div>
+                  </div>
+                  <div class="car-row">
+                    <img src="https://aka.doubaocdn.com/s/ZrrRkURHCO" alt="切诺基型">
+                    <div class="cn"><b>切诺基型</b><span>中档 · 从容四驱</span></div>
+                    <div class="cp">¥28/场</div>
+                  </div>
+                  <div class="car-row">
+                    <img src="https://aka.doubaocdn.com/s/uMSayI1QSR" alt="大脚车">
+                    <div class="cn"><b>高性能大脚车</b><span>高性能 · 姿态拉满</span></div>
+                    <div class="cp">¥45/场</div>
+                  </div>
+                  <div class="car-row">
+                    <img src="https://aka.doubaocdn.com/s/t38XfTuQrh" alt="攀爬车">
+                    <div class="cn"><b>岩石攀爬车</b><span>攀爬专精 · 陡坡克星</span></div>
+                    <div class="cp">¥35/场</div>
+                  </div>
+                  <div class="car-row">
+                    <img src="https://aka.doubaocdn.com/s/LyAhaA8Nss" alt="卡丁车">
+                    <div class="cn"><b>沙漠卡丁车</b><span>竞速型 · 高速漂移</span></div>
+                    <div class="cp">¥40/场</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 驾驶 -->
+              <div class="app-screen" id="scr-drive">
+                <div class="drive-scene">
+                  <img src="https://aka.doubaocdn.com/s/CBb9WPnrpF" alt="第一视角森林驾驶">
+                  <div class="drive-ui">
+                    <div class="drive-top">
+                      <span>第一视角</span><span>4G 低延迟</span><span>电量 62%</span>
+                    </div>
+                    <div class="drive-bot">
+                      <div class="drive-wheel">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/><path d="M12 3v5M12 16v5M3 12h5M16 12h5"/></svg>
+                      </div>
+                      <div class="drive-pedals">
+                        <div class="pedal">油门<i></i></div>
+                        <div class="pedal brake">刹车<i></i></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 比赛 -->
+              <div class="app-screen" id="scr-race">
+                <div class="race-ui">
+                  <div class="race-room">
+                    <div class="r1"><span>草原站 · 双人赛</span><b>2/2 人已就位</b></div>
+                    <div class="r2">3 : 2 : 14</div>
+                  </div>
+                  <div class="race-rank">
+                    <div class="race-row me">
+                      <span class="pos">1</span><span class="nm">我 · 大脚车</span><span class="tm">03:42.1</span><span class="st">领先</span>
+                    </div>
+                    <div class="race-row">
+                      <span class="pos">2</span><span class="nm">对手 · 卡丁车</span><span class="tm">03:48.6</span><span class="st">追赶中</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="phone-tip">四个核心界面，点击上方标签切换预览</p>
+    </div>
+  </div>
+</section>
+
+<!-- 下载模态 -->
+<div class="modal" id="dlModal">
+  <div class="modal-card">
+    <div class="modal-done" id="dlDone">
+      <div class="tick">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+      </div>
+      <h3>预约成功</h3>
+      <p>APP 上线后将第一时间通知你，首批用户还有试驾名额。</p>
+      <button class="ok" id="doneOk">好的</button>
+    </div>
+    <div class="dl-form" id="dlForm">
+      <h3>下载 APP</h3>
+      <p>当前为原型展示阶段。留下手机号，上线第一时间通知你。</p>
+      <input type="tel" id="phoneInput" placeholder="请输入手机号" maxlength="11" inputmode="numeric">
+      <button class="ok" id="submitBtn">预约下载</button>
+      <button class="later" id="laterBtn">暂不，再看看</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <span>FarDrive 远驱 · APP 原型展示</span>
+    <span>返回 <a href="index.html">营销官网首页</a></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  // 标签切换
+  var tabs = document.querySelectorAll(".app-tabs button");
+  var screens = document.querySelectorAll(".app-screen");
+  Array.prototype.forEach.call(tabs, function(btn){
+    btn.addEventListener("click", function(){
+      Array.prototype.forEach.call(tabs, function(b){ b.classList.remove("on"); });
+      Array.prototype.forEach.call(screens, function(s){ s.classList.remove("on"); });
+      btn.classList.add("on");
+      var t = btn.getAttribute("data-tab");
+      var scr = document.getElementById("scr-" + t);
+      if (scr) scr.classList.add("on");
+    });
+  });
+  // 下载模态
+  var modal = document.getElementById("dlModal");
+  var dlBtn = document.getElementById("dlBtn");
+  var dlForm = document.getElementById("dlForm");
+  var dlDone = document.getElementById("dlDone");
+  var submitBtn = document.getElementById("submitBtn");
+  var phoneInput = document.getElementById("phoneInput");
+  var laterBtn = document.getElementById("laterBtn");
+  var doneOk = document.getElementById("doneOk");
+  function openM(){ if (modal) modal.classList.add("on"); }
+  function closeM(){ if (modal) modal.classList.remove("on"); }
+  if (dlBtn) dlBtn.addEventListener("click", openM);
+  if (laterBtn) laterBtn.addEventListener("click", closeM);
+  if (doneOk) doneOk.addEventListener("click", closeM);
+  if (modal) modal.addEventListener("click", function(e){ if (e.target === modal) closeM(); });
+  if (submitBtn) submitBtn.addEventListener("click", function(){
+    var v = (phoneInput && phoneInput.value || "").trim();
+    if (!/^1\d{10}$/.test(v)) {
+      if (phoneInput) { phoneInput.focus(); phoneInput.style.borderColor = "#EA6668"; }
+      return;
+    }
+    if (dlForm) dlForm.style.display = "none";
+    if (dlDone) dlDone.classList.add("on");
+  });
+})();
+</script>
+</body>
+</html>

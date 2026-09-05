@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="FarDrive 远驱 · LEVEL 2 旗舰动感驾驶舱入口：在家置一座仿真驾驶舱，选个场景就能出发——不止赛车，未来还有无人机、船模与航天。">
+<title>FarDrive 远驱 · LEVEL 2 旗舰动感驾驶舱</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<style>
+  :root{--ink:#1A2230;--navy:#12233D;--navy2:#1E3A5F;--paper:#F5F2EA;--paper2:#EDE7D8;--amber:#E8A33D;--amber-deep:#C97F1F;--muted:#66707E;--line:rgba(18,35,61,.14);--font-display:'Noto Serif SC','Songti SC','SimSun',serif;--font-body:'Noto Sans SC','PingFang SC','Microsoft YaHei',sans-serif;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:var(--font-body);color:var(--ink);background:var(--paper);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(245,242,234,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:64px;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;}
+  .brand svg{width:26px;height:26px;}
+  .brand .en{font-family:var(--font-display);font-weight:900;}
+  .brand .zh{color:var(--muted);font-weight:500;font-size:14px;}
+  .back{font-size:14px;color:var(--navy2);border:1.5px solid var(--navy);border-radius:999px;padding:8px 18px;font-weight:500;}
+  .back:hover{background:var(--navy);color:var(--paper);}
+  .hero{position:relative;overflow:hidden;background:var(--navy);color:var(--paper);}
+  .hero .wrap{position:relative;z-index:2;padding-top:88px;padding-bottom:92px;display:grid;grid-template-columns:1.05fr .95fr;gap:52px;align-items:center;}
+  .kicker{display:inline-flex;align-items:center;gap:10px;font-size:13px;letter-spacing:.18em;color:var(--amber);font-weight:700;margin-bottom:16px;}
+  .kicker::before{content:"";width:26px;height:2px;background:var(--amber);}
+  h1{font-family:var(--font-display);font-weight:900;font-size:clamp(30px,3.6vw,46px);line-height:1.2;}
+  .hero-sub{margin-top:16px;max-width:480px;font-size:15px;color:rgba(245,242,234,.78);}
+  .hero-tags{margin-top:22px;display:flex;gap:10px;flex-wrap:wrap;}
+  .hero-tags span{font-size:12px;background:rgba(232,163,61,.16);color:var(--amber);border-radius:999px;padding:6px 14px;font-weight:500;}
+  .hero-img{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:4/3;box-shadow:0 30px 70px rgba(0,0,0,.4);}
+  .hero-img img{width:100%;height:100%;object-fit:cover;}
+  .hero-img .cap{position:absolute;inset:auto 0 0 0;padding:30px 16px 12px;background:linear-gradient(180deg,transparent,rgba(8,14,26,.85));color:#FFFFFF;font-size:12.5px;}
+  section{padding:84px 0;}
+  .sec-head{max-width:680px;}
+  h2{font-family:var(--font-display);font-weight:900;font-size:clamp(24px,3vw,34px);line-height:1.25;}
+  .sec-sub{margin-top:12px;color:var(--muted);font-size:15px;}
+  .grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:42px;}
+  .card{background:#FFFFFF;border:1px solid var(--line);border-radius:16px;padding:24px;}
+  .card svg{width:26px;height:26px;color:var(--amber-deep);}
+  .card b{display:block;font-size:16.5px;margin:12px 0 6px;}
+  .card p{font-size:13.5px;color:var(--muted);}
+  .carriers{background:var(--navy);color:var(--paper);}
+  .carriers h2{color:#FFFFFF;}
+  .carriers .sec-sub{color:rgba(245,242,234,.66);}
+  .carrier-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:42px;}
+  .carrier{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:22px;}
+  .carrier svg{width:24px;height:24px;color:var(--amber);}
+  .carrier b{display:block;font-size:16px;margin-top:10px;color:#FFFFFF;}
+  .carrier span{font-size:12.5px;color:rgba(245,242,234,.68);display:block;margin-top:4px;}
+  .gallery{background:var(--paper2);}
+  .gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;margin-top:42px;}
+  .g-item{background:#FFFFFF;border:1px solid var(--line);border-radius:14px;overflow:hidden;}
+  .g-item img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:#F4F2EB;}
+  .g-item .gn{padding:12px 14px 4px;font-size:13.5px;font-weight:700;}
+  .g-item .gd{padding:0 14px 14px;font-size:12px;color:var(--muted);}
+  .cta-band{background:var(--paper2);text-align:center;}
+  .cta-band h2{font-family:var(--font-display);font-weight:900;}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-body);font-weight:700;font-size:15px;border:0;cursor:pointer;border-radius:999px;padding:13px 30px;transition:transform .18s ease,box-shadow .18s ease;}
+  .btn-amber{background:var(--amber);color:#16233A;}
+  .btn-amber:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(232,163,61,.35);}
+  .btn-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy);}
+  .btn-ghost:hover{background:var(--navy);color:var(--paper);}
+  .btn-row{display:flex;gap:16px;justify-content:center;margin-top:32px;flex-wrap:wrap;}
+  footer{background:var(--navy);color:rgba(245,242,234,.6);padding:30px 0;font-size:12.5px;}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  footer a{color:var(--amber);}
+  @media (max-width:900px){
+    .hero .wrap{grid-template-columns:1fr;padding-top:56px;padding-bottom:60px;}
+    section{padding:64px 0;}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="index.html" aria-label="FarDrive 首页">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#12233D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="18" r="2.4"/><path d="M8.2 7.6 17 16.4"/><path d="M6 3.5V2M2.5 6H1M20.5 18v1.5M18 20.5H16.5"/></svg>
+      <span class="en">FarDrive</span><span class="zh">远驱</span>
+    </a>
+    <a class="back" href="index.html">返回首页</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="kicker">LEVEL 2 · 旗舰沉浸入口</span>
+      <h1>把一座驾驶舱，<br>搬进家里</h1>
+      <p class="hero-sub">仿真动感驾驶舱，选个场景就能出发。座椅会动、画面会晃、远方是真的——这已经不只是开车。</p>
+      <div class="hero-tags"><span>旗舰增值 · 可后置购买</span><span>动感反馈</span><span>全家共享</span></div>
+    </div>
+    <div class="hero-img">
+      <img src="https://aka.doubaocdn.com/s/ta4mSbd7TM" alt="VRS赛车模拟器驾驶舱产品图">
+      <span class="cap">市售赛车模拟器驾驶舱（示例参考）</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">为什么是旗舰</span>
+      <h2>身体先到，心才到</h2>
+      <p class="sec-sub">不只是看，而是"感觉在开"。姿态、振动、声音，全部跟着真实路况走。</p>
+    </div>
+    <div class="grid3">
+      <div class="card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 18 0M5.5 12a6.5 6.5 0 0 1 13 0M8.5 12a3.5 3.5 0 0 1 7 0"/><circle cx="12" cy="19" r="1.6"/></svg>
+        <b>仿真动感座舱</b>
+        <p>六向动感平台模拟颠簸、侧倾与加速，方向盘力反馈跟着地形走，刹车点头、上坡后仰。</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <b>大屏沉浸视野</b>
+        <p>连上大电视或投影，全景视角铺满视野。五路摄像头随时切换，车头、车顶、后视任你看。</p>
+      </div>
+      <div class="card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 8.6 14.6 4a2 2 0 0 0-2.1 0L6.3 8.6a2 2 0 0 0-1 1.7v8.2a2 2 0 0 0 2 2h1.4a2 2 0 0 0 2-2V15a2 2 0 0 1 2-2h.6a2 2 0 0 1 2 2v3.5a2 2 0 0 0 2 2h1.4a2 2 0 0 0 2-2v-8.2a2 2 0 0 0-1-1.7z"/></svg>
+        <b>全家人的远行</b>
+        <p>老人想回乡看看、孩子想开开眼界、你想放松一晚——一台座舱，全家轮流出发。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="gallery">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">在售驾驶舱参考</span>
+      <h2>市面上的座舱，先看看</h2>
+      <p class="sec-sub">以下为市售赛车模拟器驾驶舱实物（示例），形态从折叠支架到完整座舱都有——FarDrive 旗舰座舱兼容此类设备形态，也可独立自研。</p>
+    </div>
+    <div class="gallery-grid">
+      <figure class="g-item">
+        <img src="https://aka.doubaocdn.com/s/ta4mSbd7TM" alt="VRS折叠式赛车模拟驾驶舱">
+        <figcaption><div class="gn">VRS 折叠驾驶舱</div><div class="gd">座椅 + 方向盘 + 换挡 + 踏板一体，可折叠收纳</div></figcaption>
+      </figure>
+      <figure class="g-item">
+        <img src="https://aka.doubaocdn.com/s/8AbjiZc5BW" alt="CAMMUS完整赛车座舱带显示器">
+        <figcaption><div class="gn">CAMMUS 完整座舱</div><div class="gd">带屏幕支架与显示画面，还原真实驾驶舱布局</div></figcaption>
+      </figure>
+      <figure class="g-item">
+        <img src="https://aka.doubaocdn.com/s/YP1aoc3J8v" alt="PLAYCARS座椅支架套装">
+        <figcaption><div class="gn">PLAYCARS 座椅支架</div><div class="gd">座椅 + 显示器支架套装，适配主机与 PC</div></figcaption>
+      </figure>
+      <figure class="g-item">
+        <img src="https://aka.doubaocdn.com/s/M71AaelXkK" alt="RenixSim GT1赛车座舱">
+        <figcaption><div class="gn">RenixSim GT1 座舱</div><div class="gd">金属框架 + 赛车座椅，专业模拟玩家之选</div></figcaption>
+      </figure>
+    </div>
+    <p class="sec-sub" style="margin-top:18px;font-size:12.5px;">图为市售产品实物（示例），品牌与型号仅供形态参考，非 FarDrive 在售商品。</p>
+  </div>
+</section>
+
+<section class="carriers">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="kicker">不止赛车</span>
+      <h2>能真的就真，能仿真就仿真</h2>
+      <p class="sec-sub">FarDrive 的载具边界，是想象力。选个场景，开任何一种"交通工具"。</p>
+    </div>
+    <div class="carrier-grid">
+      <div class="carrier">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.5A4.5 4.5 0 0 1 10.5 9c.5 0 1-.2 1.5-.5.8-.5 1.5-1.7 2-3.5a6 6 0 0 1 4 8.5 6 6 0 0 1-11 0z"/><path d="M4 21c2-2 4-3 6-3s4 1 6 3"/></svg>
+        <b>越野赛车</b><span>当前主力，田园到沙地</span>
+      </div>
+      <div class="carrier">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a8 8 0 1 1 8-8v1.5a2.5 2.5 0 0 1-5 0V14a3 3 0 0 0-6 0v1a7 7 0 0 0 3 7z"/><path d="M12 8V6"/></svg>
+        <b>无人机 / 直升机</b><span>云端俯瞰，换个视角</span>
+      </div>
+      <div class="carrier">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a6 6 0 0 1 6 6c0 2-1 4-2 5.5L12 22l-4-8.5C7 12 6 10 6 8a6 6 0 0 1 6-6z"/><circle cx="12" cy="8" r="2"/></svg>
+        <b>船模 / 潜艇</b><span>江河湖海，乘风破浪</span>
+      </div>
+      <div class="carrier">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.5 6.5L21 11l-6.5 2.5L12 20l-2.5-6.5L3 11l6.5-2.5z"/></svg>
+        <b>航天</b><span>虚拟驾驶，直上云霄</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <div class="wrap">
+    <h2>把远方搬回家</h2>
+    <p class="sec-sub" style="margin:0 auto;">LEVEL 2 适合想为家人造一座"出行入口"的人</p>
+    <div class="btn-row">
+      <a class="btn btn-amber" href="app-preview.html">下载 APP</a>
+      <a class="btn btn-ghost" href="level-0.html">先零门槛玩起来</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>FarDrive 远驱 · LEVEL 2 旗舰动感驾驶舱</span>
+    <span>返回 <a href="index.html">营销官网首页</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
