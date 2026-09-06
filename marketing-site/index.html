@@ -74,6 +74,20 @@
   .btn-light{background:#FFFFFF;color:var(--navy);}
   .btn-light:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.22);}
 
+  /* 键盘聚焦样式 */
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [tabindex]:focus-visible{
+    outline:3px solid var(--amber);
+    outline-offset:2px;
+    border-radius:6px;
+  }
+  .btn:focus-visible{outline-offset:3px;}
+  .form-tab:focus-visible{outline-offset:-3px;}
+
   /* 移动端汉堡按钮 */
   .menu-btn{
     display:none;width:40px;height:40px;align-items:center;justify-content:center;
@@ -338,8 +352,16 @@
   footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;}
   footer .f-brand{display:flex;align-items:center;gap:8px;color:#F5F2EA;font-weight:700;}
   footer .f-brand svg{width:20px;height:20px;}
+  footer .f-links{display:flex;gap:20px;flex-wrap:wrap;margin-top:10px;}
+  footer .f-links a{color:rgba(245,242,234,.6);font-size:12.5px;transition:color .2s ease;}
+  footer .f-links a:hover{color:var(--amber);}
   footer .disclaim{max-width:640px;font-size:11.5px;color:rgba(245,242,234,.4);line-height:1.7;}
 
+  @media (max-width:1080px){
+    .fleet-grid{grid-template-columns:repeat(3,1fr);}
+    .aud-card-grid{grid-template-columns:repeat(2,1fr);}
+    .terrain-grid{grid-template-columns:repeat(3,1fr);}
+  }
   @media (max-width:860px){
     .topnav{display:none;}
     .menu-btn{display:inline-flex;}
@@ -415,6 +437,16 @@
     .form-body{padding:22px 20px 20px;}
     .form-row{grid-template-columns:1fr;gap:0;}
   }
+  @media (max-width:640px){
+    .fleet-grid{grid-template-columns:repeat(2,1fr);}
+    .play-grid{grid-template-columns:1fr;}
+    .terrain-grid{grid-template-columns:repeat(2,1fr);}
+    .trust-grid{grid-template-columns:repeat(2,1fr);}
+    .aud-banner{grid-template-columns:repeat(2,1fr);}
+    .hero h1{font-size:clamp(32px,8vw,48px);}
+    .hero .wrap{padding-top:64px;padding-bottom:60px;}
+    section{padding:56px 0;}
+  }
   @media (prefers-reduced-motion:reduce){
     html{scroll-behavior:auto;}
     *{transition:none!important;animation:none!important;}
@@ -462,6 +494,7 @@
   </nav>
 </header>
 
+<main>
 <!-- ===== Hero ===== -->
 <section class="hero" id="top">
   <img class="hero-img" src="https://aka.doubaocdn.com/s/oPcBf6sSB9" alt="重度改装的越野车停在黄昏的金色荒野">
@@ -975,6 +1008,8 @@
   </div>
 </section>
 
+</main>
+
 <footer>
   <div class="wrap">
     <div>
@@ -983,9 +1018,14 @@
         FarDrive 远驱
       </div>
       <div style="margin-top:10px;">足不出户，开向远方</div>
+      <div class="f-links">
+        <a href="mailto:hello@fardrive.cn">联系邮箱：hello@fardrive.cn</a>
+        <a href="#top">回到顶部 ↑</a>
+      </div>
     </div>
     <div class="disclaim">
-      本页面为项目概念展示页。人口数据引自民政部《2025年度国家老龄事业发展公报》；技术参数与经营数字为项目估算，以直营示范点实测为准。真实远程驾驶限定封闭场景，不涉及公共道路。
+      本页面为项目概念展示页。人口数据引自民政部《2025年度国家老龄事业发展公报》（2026年发布），为当前最新公开数据；技术参数与经营数字为项目估算，以直营示范点实测校准后为准。真实远程驾驶限定封闭场景，不涉及公共道路。
+      <br>© 2026 FarDrive 远驱 · 保留所有权利 · 浙ICP备xxxxxxxx号
     </div>
   </div>
 </footer>
