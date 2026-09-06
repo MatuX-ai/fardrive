@@ -214,7 +214,23 @@
     .tab-item { color: var(--muted); font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
     .tab-item.active { color: var(--brand); }
 
-    /* 横屏驾驶舱 */
+    /* 驾驶舱横屏模式：脱离 480px 竖屏容器，全屏横显 */
+    body.cockpit { margin: 0; background: #000; }
+    @media (orientation: landscape) {
+      body.cockpit .app-frame { max-width: none; width: 100vw; }
+    }
+    /* 竖屏设备上进入驾驶舱时，整体旋转 90° 模拟强制横屏 */
+    @media (orientation: portrait) {
+      body.cockpit .app-frame {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vh;
+        height: 100vw;
+        max-width: none;
+        transform: rotate(90deg) translateY(-100%);
+        transform-origin: top left;
+      }
+    }
     .cockpit-landscape {
       transform: rotate(0deg);
     }
@@ -581,12 +597,8 @@ function go(page) {
   } else {
     document.getElementById('tab-bar').style.display = 'none';
   }
-  // 驾驶舱横屏处理
-  if (page === 'cockpit') {
-    document.body.style.overflow = 'hidden';
-  } else {
-    document.body.style.overflow = '';
-  }
+  // 驾驶舱横屏模式：进入时脱离竖屏容器全屏横显，退出后恢复
+  document.body.classList.toggle('cockpit', page === 'cockpit');
 }
 
 // ========== 场地数据 ==========
