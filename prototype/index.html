@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>无限远征 - 远程驾驶 H5 原型</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --brand: #FF6B00;
+      --bg: #0A0A0A;
+      --good: #00E676;
+      --warn: #FFD600;
+      --danger: #FF1744;
+      --text: #FFFFFF;
+      --muted: #B0B0B0;
+    }
+    * { -webkit-tap-highlight-color: transparent; }
+    body {
+      background: #111;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+    }
+    .app-frame {
+      width: 100vw;
+      height: 100vh;
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--bg);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 40px rgba(0,0,0,.6);
+    }
+    .page {
+      position: absolute;
+      inset: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: none;
+      opacity: 0;
+      transition: opacity .2s ease;
+    }
+    .page.active { display: block; opacity: 1; }
+
+    /* 隐藏滚动条 */
+    .page::-webkit-scrollbar { display: none; }
+
+    /* 品牌渐变 */
+    .brand-gradient { background: linear-gradient(135deg, #FF6B00 0%, #FF8C00 100%); }
+
+    /* 场地卡片 */
+    .venue-card {
+      background: linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,.03) 100%);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    /* 驾驶舱摇杆 */
+    .joystick-base {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.15);
+      position: relative;
+      touch-action: none;
+    }
+    .joystick-knob {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--brand);
+      box-shadow: 0 4px 20px rgba(255,107,0,.5);
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      transition: transform .15s cubic-bezier(.34,1.56,.64,1);
+      touch-action: none;
+    }
+
+    /* 油门滑条 */
+    .throttle-track {
+      width: 36px;
+      height: 200px;
+      background: rgba(255,255,255,.1);
+      border-radius: 18px;
+      position: relative;
+      overflow: hidden;
+      touch-action: none;
+    }
+    .throttle-fill {
+      position: absolute;
+      left: 0; right: 0;
+      bottom: 50%;
+      height: 0%;
+      background: var(--good);
+      transition: height .05s linear, bottom .05s linear;
+    }
+    .throttle-fill.reverse {
+      bottom: auto;
+      top: 50%;
+      background: var(--danger);
+    }
+    .throttle-knob {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #fff;
+      position: absolute;
+      left: 50%;
+      bottom: 50%;
+      transform: translate(-50%, 50%);
+      box-shadow: 0 2px 12px rgba(0,0,0,.4);
+      touch-action: none;
+    }
+
+    /* 紧急制动按钮 */
+    .e-stop {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--danger);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.2;
+      box-shadow: 0 0 0 4px rgba(255,23,68,.3);
+      user-select: none;
+      position: relative;
+      overflow: hidden;
+    }
+    .e-stop-ring {
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 4px solid transparent;
+      border-top-color: rgba(255,255,255,.8);
+      opacity: 0;
+      transform: rotate(0deg);
+    }
+    .e-stop-ring.active { opacity: 1; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 状态栏 */
+    .hud-pill {
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(6px);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 模拟图传画面 */
+    .video-feed {
+      background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .video-feed::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: .6;
+    }
+    .video-overlay-text {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: rgba(255,255,255,.7);
+    }
+
+    /* 导航箭头动画 */
+    .nav-arrow {
+      width: 60px;
+      height: 60px;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: .6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } }
+
+    /* 勋章 */
+    .badge {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.1);
+    }
+    .badge.locked { filter: grayscale(1); opacity: .4; }
+
+    /* 底部 tab */
+    .tab-bar {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 64px;
+      background: rgba(10,10,10,.95);
+      border-top: 1px solid rgba(255,255,255,.08);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 50;
+    }
+    .tab-item { color: var(--muted); font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .tab-item.active { color: var(--brand); }
+
+    /* 横屏驾驶舱 */
+    .cockpit-landscape {
+      transform: rotate(0deg);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.75);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .modal-backdrop.active { display: flex; }
+
+    .pulse-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--good);
+      box-shadow: 0 0 8px var(--good);
+      animation: blink 1s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    .top-safe { padding-top: env(safe-area-inset-top); }
+    .bottom-safe { padding-bottom: env(safe-area-inset-bottom); }
+  </style>
+</head>
+<body>
+<div class="app-frame" id="app">
+
+  <!-- ================= 首页 ================= -->
+  <div class="page active top-safe bottom-safe" id="page-home">
+    <div class="px-4 pt-6 pb-24">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h1 class="text-2xl font-bold">无限远征</h1>
+          <p class="text-xs text-gray-400 mt-1">真实世界的远程驾驶游戏</p>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-lg">👤</div>
+      </div>
+
+      <!-- 筛选栏 -->
+      <div class="flex gap-2 overflow-x-auto pb-3 mb-2 no-scrollbar">
+        <button class="px-3 py-1.5 rounded-full text-xs bg-[#FF6B00] text-white whitespace-nowrap">全部场地</button>
+        <button class="px-3 py-1.5 rounded-full text-xs bg-white/10 text-gray-300 whitespace-nowrap">草原</button>
+        <button class="px-3 py-1.5 rounded-full text-xs bg-white/10 text-gray-300 whitespace-nowrap">沙漠</button>
+        <button class="px-3 py-1.5 rounded-full text-xs bg-white/10 text-gray-300 whitespace-nowrap">雪地</button>
+        <button class="px-3 py-1.5 rounded-full text-xs bg-white/10 text-gray-300 whitespace-nowrap">竹林</button>
+      </div>
+
+      <!-- 场地列表 -->
+      <div class="space-y-4" id="venue-list"></div>
+    </div>
+  </div>
+
+  <!-- ================= 场地详情 ================= -->
+  <div class="page top-safe bottom-safe" id="page-detail">
+    <div class="relative h-64 bg-gray-800">
+      <div class="absolute inset-0 flex items-center justify-center text-gray-500 text-6xl">🏞️</div>
+      <button onclick="go('home')" class="absolute top-4 left-4 w-10 h-10 rounded-full bg-black/50 flex items-center justify-center text-white">←</button>
+      <div class="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-black to-transparent"></div>
+      <div class="absolute bottom-4 left-4 right-4">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="px-2 py-0.5 rounded text-[10px] bg-[#FF6B00] text-white" id="detail-tag">草原</span>
+          <span class="px-2 py-0.5 rounded text-[10px] bg-green-500/20 text-green-400" id="detail-signal">S级信号</span>
+        </div>
+        <h2 class="text-xl font-bold" id="detail-name">内蒙古呼伦贝尔草原</h2>
+      </div>
+    </div>
+    <div class="px-4 pt-4 pb-28">
+      <div class="flex justify-between items-center mb-4">
+        <div class="text-sm text-gray-400">
+          <p>当前排队 <span class="text-white font-bold" id="detail-queue">2</span> 人</p>
+          <p class="mt-1">在线车辆 <span class="text-green-400">3/4</span></p>
+        </div>
+        <div class="text-right">
+          <p class="text-2xl font-bold text-[#FF6B00]">¥<span id="detail-price">30</span></p>
+          <p class="text-xs text-gray-500" id="detail-price-unit">/ 10分钟</p>
+        </div>
+      </div>
+      <p class="text-sm text-gray-300 leading-relaxed mb-4" id="detail-desc">一望无际的呼伦贝尔草原，真实的起伏地形，适合新手体验远程驾驶的乐趣。</p>
+      <div class="mb-6">
+        <h3 class="text-sm font-bold mb-2">可用车型</h3>
+        <div class="flex gap-3">
+          <div class="flex-1 bg-white/5 rounded-xl p-3 text-center">
+            <div class="text-3xl mb-1">🚙</div>
+            <div class="text-xs">越野四驱</div>
+          </div>
+          <div class="flex-1 bg-white/5 rounded-xl p-3 text-center">
+            <div class="text-3xl mb-1">🛻</div>
+            <div class="text-xs">沙漠皮卡</div>
+          </div>
+        </div>
+      </div>
+      <div class="mb-6">
+        <h3 class="text-sm font-bold mb-2">选择时长</h3>
+        <div class="flex gap-3" id="duration-options"></div>
+      </div>
+    </div>
+    <div class="absolute bottom-0 left-0 right-0 p-4 bg-black/90 border-t border-white/10">
+      <button class="w-full py-3.5 rounded-xl brand-gradient font-bold text-white" onclick="openCheckout()">立即预约</button>
+    </div>
+  </div>
+
+  <!-- ================= 订单结算（模拟支付） ================= -->
+  <div class="page top-safe bottom-safe" id="page-checkout">
+    <div class="px-4 pt-6 pb-32">
+      <div class="flex items-center gap-3 mb-6">
+        <button onclick="go('detail')" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-lg text-white">←</button>
+        <h2 class="text-lg font-bold">确认订单</h2>
+      </div>
+
+      <!-- 订单信息 -->
+      <div class="bg-white/5 rounded-2xl p-4 mb-4 flex items-center gap-3">
+        <div class="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center text-3xl" id="ck-icon">🌾</div>
+        <div class="flex-1 min-w-0">
+          <div class="font-bold truncate" id="ck-name">内蒙古呼伦贝尔草原</div>
+          <div class="text-xs text-gray-400 mt-1" id="ck-meta">草原 · 10分钟驾驶时长</div>
+        </div>
+        <div class="text-[#FF6B00] font-bold text-lg">¥<span id="ck-price">30</span></div>
+      </div>
+
+      <!-- 支付方式 -->
+      <div class="bg-white/5 rounded-2xl overflow-hidden mb-4">
+        <div class="px-4 py-3 border-b border-white/5 text-sm font-bold">支付方式</div>
+        <div class="px-4 py-3 flex items-center gap-3 bg-[#FF6B00]/10">
+          <span class="text-xl">💰</span>
+          <div class="flex-1">
+            <div class="text-sm font-bold">账户余额</div>
+            <div class="text-xs text-gray-400 mt-0.5">可用 ¥<span id="ck-balance">128.00</span></div>
+          </div>
+          <span class="w-5 h-5 rounded-full bg-[#FF6B00] flex items-center justify-center text-[10px] text-white">✓</span>
+        </div>
+        <div class="px-4 py-3 flex items-center gap-3 opacity-40">
+          <span class="text-xl">💳</span>
+          <div class="flex-1">
+            <div class="text-sm">微信 / 支付宝</div>
+            <div class="text-xs text-gray-400 mt-0.5">V1.0 接入真实支付渠道</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-[11px] text-gray-500 leading-relaxed px-1 space-y-1">
+        <p>· 支付即锁定车辆并开始计时；驾驶时长未用完不退，断连超 10 秒按比例退款。</p>
+        <p>· 本页为交互原型演示，余额支付为模拟扣款，不产生真实交易。</p>
+      </div>
+    </div>
+
+    <div class="absolute bottom-0 left-0 right-0 p-4 bg-black/90 border-t border-white/10">
+      <button id="btn-pay" onclick="confirmPay()" class="w-full py-3.5 rounded-xl brand-gradient font-bold text-white">确认支付</button>
+    </div>
+  </div>
+
+  <!-- ================= 驾驶舱 ================= -->
+  <div class="page" id="page-cockpit" style="background:#000;">
+    <!-- 顶部状态栏 -->
+    <div class="absolute top-0 left-0 right-0 z-20 p-3 flex justify-between items-start">
+      <div class="hud-pill text-white">
+        <span>⏱</span>
+        <span id="hud-time" class="font-mono font-bold text-[#FF6B00]">10:00</span>
+      </div>
+      <div class="flex gap-2">
+        <div class="hud-pill text-white">
+          <span id="hud-latency-dot" class="pulse-dot"></span>
+          <span id="hud-latency">32ms</span>
+        </div>
+        <div class="hud-pill text-white">
+          <span>🔋</span>
+          <span id="hud-battery">67%</span>
+        </div>
+        <div class="hud-pill text-white">
+          <span>🚗</span>
+          <span id="hud-speed">0km/h</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 图传画面 -->
+    <div class="video-feed absolute inset-0" id="video-feed">
+      <div class="video-overlay-text">
+        <div class="text-5xl mb-3">🏞️</div>
+        <div class="text-sm">图传画面模拟</div>
+        <div class="text-xs text-gray-500 mt-1">H.265 实时视频流</div>
+      </div>
+      <!-- 导航箭头（电量低时显示） -->
+      <div id="nav-arrow" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 hidden">
+        <div class="nav-arrow text-[#FF6B00] text-6xl">⬆</div>
+        <div class="text-center text-xs mt-1 text-[#FF6B00]">换电站方向</div>
+      </div>
+      <!-- 重连蒙层 -->
+      <div id="reconnect-mask" class="absolute inset-0 bg-black/60 hidden items-center justify-center flex-col">
+        <div class="w-10 h-10 border-4 border-white/20 border-t-white rounded-full animate-spin mb-3"></div>
+        <div class="text-white font-bold">正在重连... 第 <span id="reconnect-count">1</span> 次</div>
+        <div class="text-xs text-gray-300 mt-1">车辆已自动减速，请耐心等待</div>
+      </div>
+    </div>
+
+    <!-- 紧急制动 -->
+    <div class="absolute top-20 right-4 z-30">
+      <div class="e-stop text-white" id="e-stop" ontouchstart="startEStop(event)" onmousedown="startEStop(event)">
+        <div class="e-stop-ring" id="e-stop-ring"></div>
+        <div>紧急<br>制动</div>
+      </div>
+    </div>
+
+    <!-- 底部操控区 -->
+    <div class="absolute bottom-6 left-0 right-0 z-20 px-6 flex justify-between items-end">
+      <!-- 左侧摇杆 -->
+      <div class="flex flex-col items-center gap-2">
+        <div class="joystick-base" id="joystick">
+          <div class="joystick-knob" id="joystick-knob"></div>
+        </div>
+        <div class="text-xs text-gray-400">方向</div>
+      </div>
+
+      <!-- 辅助按钮 -->
+      <div class="flex flex-col gap-3 mb-4">
+        <button class="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-lg" id="btn-light" onclick="toggleLight()">💡</button>
+        <button class="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-lg" onclick="toggleHorn()">📢</button>
+        <button class="w-11 h-11 rounded-full bg-white/10 flex items-center justify-center text-lg" onclick="toggleCam()">🎥</button>
+      </div>
+
+      <!-- 右侧油门 -->
+      <div class="flex flex-col items-center gap-2">
+        <div class="throttle-track" id="throttle">
+          <div class="throttle-fill" id="throttle-fill"></div>
+          <div class="throttle-knob" id="throttle-knob"></div>
+        </div>
+        <div class="text-xs text-gray-400" id="throttle-value">0%</div>
+      </div>
+    </div>
+
+    <!-- 倒计时结束/故障弹窗 -->
+    <div class="modal-backdrop" id="cockpit-modal">
+      <div class="bg-[#1a1a1a] rounded-2xl p-6 w-full max-w-sm border border-white/10">
+        <h3 class="text-lg font-bold mb-2" id="cockpit-modal-title">订单结束</h3>
+        <p class="text-sm text-gray-400 mb-4" id="cockpit-modal-body">本次驾驶已结束，共行驶 1.2km</p>
+        <div id="cockpit-modal-actions" class="flex flex-col gap-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 订单完成 / 高光时刻 ================= -->
+  <div class="page top-safe bottom-safe" id="page-result">
+    <div class="px-4 pt-6 pb-28">
+      <div class="text-center mb-6">
+        <div class="text-5xl mb-3">🎬</div>
+        <h2 class="text-xl font-bold">你的高光时刻</h2>
+        <p class="text-xs text-gray-400 mt-1">系统自动剪辑 15 秒精彩瞬间</p>
+      </div>
+      <div class="aspect-[9/16] bg-gray-800 rounded-2xl mb-6 relative overflow-hidden">
+        <div class="absolute inset-0 flex items-center justify-center text-6xl">🏞️</div>
+        <div class="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+          <div class="text-sm font-bold">内蒙古呼伦贝尔草原</div>
+          <div class="text-xs text-gray-300">行驶 2.3km · 最高速度 23km/h</div>
+        </div>
+        <div class="absolute top-4 right-4 text-xs text-white/70">15s</div>
+      </div>
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <button class="py-3 rounded-xl bg-white/10 text-white text-sm font-bold">保存到相册</button>
+        <button class="py-3 rounded-xl brand-gradient text-white text-sm font-bold">分享朋友圈</button>
+      </div>
+      <div class="bg-white/5 rounded-xl p-4 mb-4">
+        <h3 class="text-sm font-bold mb-3">本次收获</h3>
+        <div class="flex gap-4">
+          <div class="text-center">
+            <div class="badge bg-green-500/20">🌾</div>
+            <div class="text-[10px] mt-1 text-gray-400">草原勋章</div>
+          </div>
+          <div class="text-center">
+            <div class="badge locked">🏜️</div>
+            <div class="text-[10px] mt-1 text-gray-400">未解锁</div>
+          </div>
+        </div>
+      </div>
+      <button class="w-full py-3 rounded-xl bg-white/10 text-white text-sm font-bold" onclick="go('home')">返回首页</button>
+    </div>
+  </div>
+
+  <!-- ================= 个人中心 ================= -->
+  <div class="page top-safe bottom-safe" id="page-profile">
+    <div class="px-4 pt-6 pb-28">
+      <div class="flex items-center gap-4 mb-6">
+        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-[#FF6B00] to-yellow-500 flex items-center justify-center text-2xl">👤</div>
+        <div>
+          <h2 class="text-lg font-bold">越野探险家</h2>
+          <p class="text-xs text-gray-400">ID: 8839201</p>
+        </div>
+      </div>
+
+      <div class="bg-white/5 rounded-2xl p-4 mb-4">
+        <h3 class="text-sm font-bold mb-3">账户余额</h3>
+        <div class="text-2xl font-bold text-[#FF6B00]">¥<span id="profile-balance">128.00</span></div>
+        <div class="flex gap-2 mt-3">
+          <button class="flex-1 py-2 rounded-lg bg-[#FF6B00] text-white text-xs font-bold">充值</button>
+          <button class="flex-1 py-2 rounded-lg bg-white/10 text-white text-xs">优惠券 3 张</button>
+        </div>
+      </div>
+
+      <div class="bg-white/5 rounded-2xl p-4 mb-4">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="text-sm font-bold">足迹地图</h3>
+          <span class="text-xs text-[#FF6B00]">已点亮 1 个城市</span>
+        </div>
+        <div class="aspect-[16/9] bg-[#0f2e1f] rounded-xl relative overflow-hidden flex items-center justify-center">
+          <div class="text-4xl opacity-40">🗺️</div>
+          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-[#FF6B00] rounded-full shadow-[0_0_10px_#FF6B00]"></div>
+          <div class="absolute bottom-2 left-2 text-[10px] text-white/70">内蒙古 · 呼伦贝尔</div>
+        </div>
+      </div>
+
+      <div class="bg-white/5 rounded-2xl p-4 mb-4">
+        <h3 class="text-sm font-bold mb-3">我的勋章</h3>
+        <div class="flex gap-3 flex-wrap">
+          <div class="text-center"><div class="badge bg-green-500/20">🌾</div><div class="text-[10px] mt-1 text-gray-400">草原</div></div>
+          <div class="text-center"><div class="badge locked">🏜️</div><div class="text-[10px] mt-1 text-gray-400">沙漠</div></div>
+          <div class="text-center"><div class="badge locked">❄️</div><div class="text-[10px] mt-1 text-gray-400">雪地</div></div>
+          <div class="text-center"><div class="badge locked">🎋</div><div class="text-[10px] mt-1 text-gray-400">竹林</div></div>
+        </div>
+      </div>
+
+      <div class="bg-white/5 rounded-2xl overflow-hidden mb-4">
+        <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center">
+          <span class="text-sm">订单记录</span>
+          <span class="text-xs text-gray-500">></span>
+        </div>
+        <div class="px-4 py-3 border-b border-white/5 flex justify-between items-center">
+          <span class="text-sm">邀请好友</span>
+          <span class="text-xs text-gray-500">></span>
+        </div>
+        <div class="px-4 py-3 flex justify-between items-center">
+          <span class="text-sm">设置</span>
+          <span class="text-xs text-gray-500">></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 底部 Tab Bar ================= -->
+  <div class="tab-bar" id="tab-bar">
+    <div class="tab-item active" onclick="go('home')">
+      <span class="text-xl">🏠</span>
+      <span>首页</span>
+    </div>
+    <div class="tab-item" onclick="go('profile')">
+      <span class="text-xl">👤</span>
+      <span>我的</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ========== 页面路由 ==========
+function go(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  if (page === 'home' || page === 'profile') {
+    document.getElementById('tab-bar').style.display = 'flex';
+    document.querySelector(`.tab-item:nth-child(${page === 'home' ? 1 : 2})`).classList.add('active');
+  } else {
+    document.getElementById('tab-bar').style.display = 'none';
+  }
+  // 驾驶舱横屏处理
+  if (page === 'cockpit') {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = '';
+  }
+}
+
+// ========== 场地数据 ==========
+const venues = [
+  { id: 1, name: '内蒙古呼伦贝尔草原', tag: '草原', signal: 'S级信号', price: 30, queue: 2, online: '3/4', desc: '一望无际的呼伦贝尔草原，真实的起伏地形，适合新手体验远程驾驶的乐趣。', icon: '🌾' },
+  { id: 2, name: '甘肃敦煌沙漠', tag: '沙漠', signal: 'A级信号', price: 35, queue: 0, online: '2/3', desc: '真实沙丘地形，体验沙漠冲坡与侧翻风险，硬核玩家的首选。', icon: '🏜️' },
+  { id: 3, name: '黑龙江雪乡雪地', tag: '雪地', signal: 'A级信号', price: 32, queue: 1, online: '1/2', desc: '白雪皑皑的北方雪地，低附着力路面带来独特操控挑战。', icon: '❄️' },
+  { id: 4, name: '四川蜀南竹海', tag: '竹林', signal: 'B级信号', price: 28, queue: 4, online: '2/2', desc: '竹林小径穿行，狭窄空间考验方向精准度。', icon: '🎋' },
+  { id: 5, name: '新疆戈壁滩', tag: '戈壁', signal: 'A级信号', price: 33, queue: 0, online: '2/4', desc: '广袤戈壁，风蚀地貌，适合长距离直线驾驶。', icon: '🪨' }
+];
+
+let currentVenue = venues[0];
+let selectedDuration = 10;
+let selectedPrice = 30;
+
+function renderVenues() {
+  const list = document.getElementById('venue-list');
+  list.innerHTML = venues.map(v => `
+    <div class="venue-card" onclick="openDetail(${v.id})">
+      <div class="h-40 bg-gray-700 flex items-center justify-center text-6xl relative">
+        ${v.icon}
+        <div class="absolute top-3 left-3 flex gap-2">
+          <span class="px-2 py-0.5 rounded text-[10px] bg-black/50 text-white">${v.tag}</span>
+          <span class="px-2 py-0.5 rounded text-[10px] bg-green-500/80 text-white">${v.signal}</span>
+        </div>
+        <div class="absolute bottom-3 right-3 px-2 py-0.5 rounded text-[10px] bg-black/60 text-white">
+          排队 ${v.queue} 人
+        </div>
+      </div>
+      <div class="p-3">
+        <div class="flex justify-between items-start">
+          <h3 class="font-bold text-base">${v.name}</h3>
+          <div class="text-right">
+            <div class="text-[#FF6B00] font-bold">¥${v.price}</div>
+            <div class="text-[10px] text-gray-500">/10分钟</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
+          <span>⭐ 4.9</span>
+          <span>在线 ${v.online}</span>
+          <span>距离 1,240km</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openDetail(id) {
+  currentVenue = venues.find(v => v.id === id);
+  document.getElementById('detail-name').textContent = currentVenue.name;
+  document.getElementById('detail-tag').textContent = currentVenue.tag;
+  document.getElementById('detail-signal').textContent = currentVenue.signal;
+  document.getElementById('detail-queue').textContent = currentVenue.queue;
+  document.getElementById('detail-desc').textContent = currentVenue.desc;
+  renderDurationOptions();
+  go('detail');
+}
+
+function priceFor(mins) {
+  const base = currentVenue.price; // 每10分钟单价
+  const discount = mins === 10 ? 1 : mins === 20 ? 0.95 : 0.9; // 长时包场优惠
+  return Math.round(base * (mins / 10) * discount);
+}
+
+function renderDurationOptions() {
+  const box = document.getElementById('duration-options');
+  box.innerHTML = [10, 20, 30].map(m =>
+    `<button class="flex-1 py-3 rounded-xl bg-white/10 text-gray-300 text-sm" onclick="selectDuration(${m}, this)">${m}分钟 ¥${priceFor(m)}</button>`
+  ).join('');
+  selectDuration(10, box.firstElementChild);
+}
+
+function selectDuration(min, btn) {
+  selectedDuration = min;
+  selectedPrice = priceFor(min);
+  btn.parentElement.querySelectorAll('button').forEach(b => {
+    b.classList.remove('bg-[#FF6B00]', 'text-white', 'font-bold');
+    b.classList.add('bg-white/10', 'text-gray-300');
+  });
+  btn.classList.remove('bg-white/10', 'text-gray-300');
+  btn.classList.add('bg-[#FF6B00]', 'text-white', 'font-bold');
+  document.getElementById('detail-price').textContent = selectedPrice;
+  document.getElementById('detail-price-unit').textContent = '/ ' + min + ' 分钟';
+}
+
+// ========== 订单结算（模拟支付） ==========
+let accountBalance = 128;
+let paying = false;
+
+function openCheckout() {
+  renderCheckout();
+  go('checkout');
+}
+
+function renderCheckout() {
+  paying = false;
+  document.getElementById('ck-icon').textContent = currentVenue.icon;
+  document.getElementById('ck-name').textContent = currentVenue.name;
+  document.getElementById('ck-meta').textContent = currentVenue.tag + ' · ' + selectedDuration + '分钟驾驶时长';
+  document.getElementById('ck-price').textContent = selectedPrice;
+  document.getElementById('ck-balance').textContent = accountBalance.toFixed(2);
+  const payBtn = document.getElementById('btn-pay');
+  payBtn.disabled = false;
+  payBtn.classList.remove('opacity-50');
+  payBtn.textContent = '确认支付 ¥' + selectedPrice;
+}
+
+function confirmPay() {
+  if (paying) return;
+  paying = true;
+  const payBtn = document.getElementById('btn-pay');
+  payBtn.disabled = true;
+  payBtn.classList.add('opacity-50');
+  payBtn.textContent = '支付中...';
+  setTimeout(() => {
+    accountBalance = Math.round((accountBalance - selectedPrice) * 100) / 100;
+    document.getElementById('profile-balance').textContent = accountBalance.toFixed(2);
+    paying = false;
+    startDrive();
+  }, 900);
+}
+
+// ========== 驾驶舱逻辑 ==========
+let driveTimer = null;
+let remainingSeconds = 0;
+let battery = 67;
+let speed = 0;
+let latency = 32;
+let throttleValue = 0;
+let steeringValue = 0;
+let eStopActive = false;
+let eStopTimer = null;
+let navShown = false;
+let notifiedTurtle = false;
+
+function startDrive() {
+  remainingSeconds = selectedDuration * 60;
+  battery = 67;
+  speed = 0;
+  throttleValue = 0;
+  steeringValue = 0;
+  eStopActive = false;
+  navShown = false;
+  notifiedTurtle = false;
+  document.getElementById('nav-arrow').classList.add('hidden');
+  document.getElementById('e-stop').style.background = '';
+  hideCockpitModal();
+  updateThrottleUI(0);
+  resetJoystick();
+  go('cockpit');
+  startDriveLoop();
+}
+
+function startDriveLoop() {
+  if (driveTimer) clearInterval(driveTimer);
+  driveTimer = setInterval(() => {
+    if (eStopActive) {
+      speed = Math.max(0, speed - 2);
+    } else {
+      // 速度根据油门值变化（RC越野车模拟上限 ~18km/h）
+      const targetSpeed = Math.abs(throttleValue) * 0.18;
+      speed += (targetSpeed - speed) * 0.15;
+    }
+
+    // 模拟延迟波动
+    latency = Math.max(20, Math.min(300, latency + (Math.random() - 0.5) * 20));
+
+    // 电量消耗
+    if (remainingSeconds % 10 === 0) battery = Math.max(0, battery - 0.3);
+
+    remainingSeconds--;
+    updateHUD();
+
+    // 电量低导航（每次驾驶只提示一次）
+    if (battery < 25 && !navShown) {
+      navShown = true;
+      document.getElementById('nav-arrow').classList.remove('hidden');
+    }
+    if (battery < 15 && !notifiedTurtle) {
+      notifiedTurtle = true;
+      showCockpitModal({
+        title: '电量过低',
+        body: '车辆已进入龟速模式，请尽快前往换电站，剩余续航约 5 分钟。',
+        actions: [
+          { label: '继续驾驶', primary: true, onClick: hideCockpitModal },
+          { label: '结束驾驶', onClick: endDrive }
+        ]
+      });
+    }
+
+    if (remainingSeconds <= 0) {
+      clearInterval(driveTimer);
+      const km = (speed * selectedDuration / 60).toFixed(1);
+      showCockpitModal({
+        title: '订单结束',
+        body: '本次驾驶时间已用完，共行驶 ' + km + 'km',
+        actions: [{ label: '查看高光时刻', primary: true, onClick: endDrive }]
+      });
+    }
+  }, 1000);
+}
+
+function updateHUD() {
+  const m = Math.floor(remainingSeconds / 60).toString().padStart(2, '0');
+  const s = (remainingSeconds % 60).toString().padStart(2, '0');
+  const timeEl = document.getElementById('hud-time');
+  timeEl.textContent = m + ':' + s;
+  if (remainingSeconds <= 60) {
+    timeEl.classList.add('text-[#FF1744]', 'animate-pulse');
+    timeEl.classList.remove('text-[#FF6B00]');
+  } else {
+    timeEl.classList.remove('text-[#FF1744]', 'animate-pulse');
+    timeEl.classList.add('text-[#FF6B00]');
+  }
+
+  document.getElementById('hud-latency').textContent = Math.round(latency) + 'ms';
+  const dot = document.getElementById('hud-latency-dot');
+  dot.style.background = latency < 150 ? 'var(--good)' : latency < 250 ? 'var(--warn)' : 'var(--danger)';
+  dot.style.boxShadow = `0 0 8px ${dot.style.background}`;
+
+  document.getElementById('hud-battery').textContent = Math.round(battery) + '%';
+  document.getElementById('hud-battery').style.color = battery < 25 ? 'var(--danger)' : '';
+  document.getElementById('hud-speed').textContent = Math.round(speed) + 'km/h';
+}
+
+function showCockpitModal({ title, body, actions }) {
+  document.getElementById('cockpit-modal-title').textContent = title;
+  document.getElementById('cockpit-modal-body').textContent = body;
+  const box = document.getElementById('cockpit-modal-actions');
+  box.innerHTML = '';
+  (actions || [{ label: '好的', onClick: hideCockpitModal }]).forEach(a => {
+    const b = document.createElement('button');
+    b.textContent = a.label;
+    b.className = 'w-full py-3 rounded-xl text-sm font-bold ' +
+      (a.primary ? 'brand-gradient text-white' : 'bg-white/10 text-white');
+    b.onclick = a.onClick;
+    box.appendChild(b);
+  });
+  document.getElementById('cockpit-modal').classList.add('active');
+}
+
+function hideCockpitModal() {
+  document.getElementById('cockpit-modal').classList.remove('active');
+}
+
+function endDrive() {
+  hideCockpitModal();
+  if (driveTimer) clearInterval(driveTimer);
+  go('result');
+}
+
+// ========== 摇杆交互 ==========
+const joystick = document.getElementById('joystick');
+const joystickKnob = document.getElementById('joystick-knob');
+let joyDragging = false;
+let joyStart = { x: 0, y: 0 };
+const joyMaxR = 48;
+
+function resetJoystick() {
+  joystickKnob.style.transform = 'translate(-50%, -50%) translate(0px, 0px)';
+}
+
+function handleJoyStart(e) {
+  e.preventDefault();
+  joyDragging = true;
+  const rect = joystick.getBoundingClientRect();
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  joyStart = { x: centerX, y: centerY };
+}
+
+function handleJoyMove(e) {
+  if (!joyDragging) return;
+  e.preventDefault();
+  const touch = e.touches ? e.touches[0] : e;
+  let dx = touch.clientX - joyStart.x;
+  let dy = touch.clientY - joyStart.y;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  if (dist > joyMaxR) {
+    dx = dx / dist * joyMaxR;
+    dy = dy / dist * joyMaxR;
+  }
+  joystickKnob.style.transform = `translate(-50%, -50%) translate(${dx}px, ${dy}px)`;
+  steeringValue = Math.atan2(dx, -dy) * (180 / Math.PI);
+}
+
+function handleJoyEnd(e) {
+  if (!joyDragging) return;
+  joyDragging = false;
+  resetJoystick();
+  steeringValue = 0;
+}
+
+joystick.addEventListener('touchstart', handleJoyStart, { passive: false });
+joystick.addEventListener('touchmove', handleJoyMove, { passive: false });
+joystick.addEventListener('touchend', handleJoyEnd);
+joystick.addEventListener('mousedown', handleJoyStart);
+document.addEventListener('mousemove', handleJoyMove);
+document.addEventListener('mouseup', handleJoyEnd);
+
+// ========== 油门交互 ==========
+const throttleTrack = document.getElementById('throttle');
+const throttleKnob = document.getElementById('throttle-knob');
+const throttleFill = document.getElementById('throttle-fill');
+let throttleDragging = false;
+let throttleStartY = 0;
+let throttleStartVal = 0;
+
+function updateThrottleUI(value) {
+  throttleValue = value;
+  const pct = Math.abs(value);
+  throttleFill.style.height = pct + '%';
+  throttleFill.classList.toggle('reverse', value < 0);
+  const offset = pct / 2;
+  throttleKnob.style.bottom = value >= 0 ? (50 + offset) + '%' : (50 - offset) + '%';
+  document.getElementById('throttle-value').textContent = Math.round(value) + '%';
+}
+
+function handleThrottleStart(e) {
+  e.preventDefault();
+  throttleDragging = true;
+  const touch = e.touches ? e.touches[0] : e;
+  throttleStartY = touch.clientY;
+  throttleStartVal = throttleValue;
+}
+
+function handleThrottleMove(e) {
+  if (!throttleDragging) return;
+  e.preventDefault();
+  const touch = e.touches ? e.touches[0] : e;
+  const rect = throttleTrack.getBoundingClientRect();
+  const dy = throttleStartY - touch.clientY;
+  let value = throttleStartVal + (dy / rect.height) * 200;
+  value = Math.max(-100, Math.min(100, value));
+  // 中心死区
+  if (Math.abs(value) < 10) value = 0;
+  updateThrottleUI(value);
+}
+
+function handleThrottleEnd(e) {
+  if (!throttleDragging) return;
+  throttleDragging = false;
+  updateThrottleUI(0);
+}
+
+throttleTrack.addEventListener('touchstart', handleThrottleStart, { passive: false });
+throttleTrack.addEventListener('touchmove', handleThrottleMove, { passive: false });
+throttleTrack.addEventListener('touchend', handleThrottleEnd);
+throttleTrack.addEventListener('mousedown', handleThrottleStart);
+document.addEventListener('mousemove', handleThrottleMove);
+document.addEventListener('mouseup', handleThrottleEnd);
+
+// ========== 紧急制动 ==========
+function startEStop(e) {
+  e.preventDefault();
+  const ring = document.getElementById('e-stop-ring');
+  const btn = document.getElementById('e-stop');
+  ring.classList.add('active');
+  clearTimeout(eStopTimer);
+  eStopTimer = setTimeout(() => {
+    ring.classList.remove('active');
+    if (!eStopActive) {
+      // 长按 1 秒触发制动
+      eStopActive = true;
+      btn.style.background = '#b91c1c';
+      showCockpitModal({
+        title: '紧急制动已触发',
+        body: '车辆动力已切断，双闪已开启。如需恢复驾驶请解除制动。',
+        actions: [
+          { label: '解除制动', primary: true, onClick: releaseEStop },
+          { label: '结束本次驾驶', onClick: endDrive }
+        ]
+      });
+    } else {
+      // 制动状态下再次长按 1 秒解除
+      releaseEStop();
+    }
+  }, 1000);
+}
+
+function endEStop() {
+  if (eStopTimer) clearTimeout(eStopTimer);
+  document.getElementById('e-stop-ring').classList.remove('active');
+}
+
+function releaseEStop() {
+  if (!eStopActive) return;
+  eStopActive = false;
+  document.getElementById('e-stop').style.background = '';
+  hideCockpitModal();
+}
+
+document.getElementById('e-stop').addEventListener('touchend', endEStop);
+document.getElementById('e-stop').addEventListener('mouseup', endEStop);
+
+// ========== 辅助按钮 ==========
+let lightOn = false;
+function toggleLight() {
+  lightOn = !lightOn;
+  document.getElementById('btn-light').style.background = lightOn ? 'rgba(255,107,0,.4)' : 'rgba(255,255,255,.1)';
+}
+function toggleHorn() { alert('喇叭：哔——（原型提示）'); }
+function toggleCam() { alert('切换摄像头视角（原型提示）'); }
+
+// ========== 初始化 ==========
+renderVenues();
+</script>
+</body>
+</html>
