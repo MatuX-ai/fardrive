@@ -235,6 +235,45 @@
       transform: rotate(0deg);
     }
 
+    /* 驾驶舱 · 旋转提示（仅竖屏进入时出现，横屏自动隐藏） */
+    #rot-hint {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(10, 10, 10, .98);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 32px;
+    }
+    @media (orientation: portrait) {
+      body.cockpit:not(.rot-dismissed) #rot-hint { display: flex; }
+    }
+    .rot-phone {
+      font-size: 56px;
+      line-height: 1;
+      margin-bottom: 24px;
+      animation: rot-phone 1.6s ease-in-out infinite;
+    }
+    @keyframes rot-phone {
+      0%, 20% { transform: rotate(0deg); }
+      55%, 100% { transform: rotate(90deg); }
+    }
+    #rot-hint h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+    #rot-hint p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    #rot-continue {
+      margin-top: 24px;
+      padding: 11px 26px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .1);
+      border: 1px solid rgba(255, 255, 255, .15);
+      color: var(--text);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -585,6 +624,15 @@
 
 </div>
 
+  <!-- 旋转提示：竖屏进入驾驶舱时出现，旋转至横屏自动消失 -->
+  <div id="rot-hint">
+    <div class="rot-phone">📱</div>
+    <h3>请将手机旋转至横屏</h3>
+    <p>横屏可获完整驾驶视野与最佳操控体验</p>
+    <p>旋转设备后本提示将自动消失</p>
+    <button id="rot-continue" onclick="dismissRotHint()">仍在竖屏使用 →</button>
+  </div>
+
 <script>
 // ========== 页面路由 ==========
 function go(page) {
@@ -599,6 +647,11 @@ function go(page) {
   }
   // 驾驶舱横屏模式：进入时脱离竖屏容器全屏横显，退出后恢复
   document.body.classList.toggle('cockpit', page === 'cockpit');
+  if (page === 'cockpit') document.body.classList.remove('rot-dismissed');
+}
+
+function dismissRotHint() {
+  document.body.classList.add('rot-dismissed');
 }
 
 // ========== 场地数据 ==========
