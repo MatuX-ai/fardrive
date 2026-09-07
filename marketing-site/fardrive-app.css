@@ -32,7 +32,7 @@ body{
 }
 button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer;}
 img{max-width:100%;display:block;}
-input{font-family:inherit;}
+input{font-family:inherit;user-select:text;-webkit-user-select:text;}
 b{font-weight:800;}
 
 /* ---------- 手机壳壳体 ---------- */
