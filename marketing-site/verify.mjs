@@ -61,14 +61,18 @@ assert.deepEqual(rk1, {exp:80,gold:60});
 assert.ok(rk3.exp > rk1.exp && rk3.gold > rk1.gold, '连击加成应提高奖励');
 console.log('4) 坐标奖励 + 连击加成: ✅');
 
-// ===== 5) 比赛节奏 =====
+// ===== 5) 比赛节奏（与新公式一致）=====
 function raceSim(car, holdSec){
   const dt = 1/60;
   let mePos=0, opPos=0, t=0;
   const carMul = 0.85 + car.speed/200 + car.acc/300;
+  // 对手速度随车型匹配（修复 4）
+  const opSpdBase = 30 + car.speed * 0.22;
   while(t < holdSec){
     mePos = Math.min(1000, mePos + 1000*0.32*carMul*dt);
-    opPos = Math.min(1000, opPos + 1000*(0.18+0.09*Math.sin(t*5))*dt);
+    const wave = Math.sin(t/6) * 0.05 + Math.sin(t*7.3) * 0.02;
+    const opRate = (opSpdBase / 1000) * (1 + wave);
+    opPos = Math.min(1000, opPos + 1000 * opRate * dt);
     if(mePos>=1000 || opPos>=1000) return { t, mePos, opPos, won: mePos>=opPos };
     t += dt;
   }
@@ -78,6 +82,12 @@ const race = raceSim(cars[1], 8); // 切诺基
 assert.equal(race.won, true, '切诺基应能击败对手');
 assert.ok(race.t >= 2 && race.t <= 6, '比赛应 2-6 秒内决出胜负：' + race.t.toFixed(2));
 console.log('5) 比赛节奏 (切诺基, 1000m): ✅ 耗时 ' + race.t.toFixed(2) + 's, 玩家 ' + (race.won?'胜':'负'));
+
+// ===== 5b) 比赛 AI 难度匹配（修复 4）=====
+const raceLow = raceSim(cars[0], 12); // 212 慢车
+const raceHigh = raceSim(cars[4], 12); // kart 快车
+console.log('5b) AI 难度匹配: ✅ 212 完赛 ' + raceLow.t.toFixed(1) + 's vs kart ' + raceHigh.t.toFixed(1) + 's');
+assert.ok(raceHigh.t < raceLow.t, '快车应比慢车更早完赛');
 
 // ===== 6) 任务系统状态机 =====
 const tasks = [
