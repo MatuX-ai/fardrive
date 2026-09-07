@@ -14,6 +14,7 @@
 <meta name="twitter:title" content="FarDrive 远驱 · 足不出户，开向远方">
 <meta name="twitter:description" content="远程驾驶真实场地的越野遥控赛车，探索从未点亮的黑暗森林。">
 <meta name="twitter:image" content="https://aka.doubaocdn.com/s/oPcBf6sSB9">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://miaoda.feishu.cn" crossorigin>
 <link rel="preconnect" href="https://aka.doubaocdn.com">
 <title>FarDrive 远驱 · 足不出户，开向远方</title>
@@ -71,6 +72,9 @@
   .btn-amber:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(232,163,61,.35);}
   .btn-ghost{background:transparent;color:var(--navy);border:1.5px solid var(--navy);}
   .btn-ghost:hover{background:var(--navy);color:var(--paper);}
+  .btn-sm{padding:9px 16px;font-size:13.5px;border-radius:8px;}
+  .btn-admin-entry{display:inline-flex;align-items:center;gap:6px;border-color:rgba(18,35,61,.35);color:var(--navy2);}
+  .btn-admin-entry:hover{border-color:var(--navy);background:rgba(18,35,61,.04);color:var(--navy);}
   .btn-light{background:#FFFFFF;color:var(--navy);}
   .btn-light:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(0,0,0,.22);}
 
@@ -341,6 +345,18 @@
   .ft b{display:block;font-family:var(--font-display);font-size:18px;font-weight:700;margin:12px 0 6px;color:#FFFFFF;}
   .ft p{font-size:13px;color:rgba(245,242,234,.7);}
   .fr-note{margin-top:26px;font-size:12.5px;color:rgba(245,242,234,.55);}
+  .fr-existing{
+    margin-top:30px;
+    display:flex;align-items:center;justify-content:space-between;gap:18px;
+    padding:20px 24px;
+    background:linear-gradient(135deg,rgba(232,163,61,.14),rgba(255,255,255,.04));
+    border:1px dashed rgba(232,163,61,.5);
+    border-radius:14px;
+    flex-wrap:wrap;
+  }
+  .fr-existing-title{font-family:var(--font-display);font-size:18px;font-weight:900;color:var(--paper);}
+  .fr-existing-sub{font-size:13px;color:rgba(245,242,234,.72);margin-top:4px;}
+  .fr-existing .btn{white-space:nowrap;flex-shrink:0;}
 
   /* ===== 底部CTA ===== */
   .cta-final{background:linear-gradient(180deg,var(--paper) 0%,var(--paper2) 100%);text-align:center;}
@@ -474,6 +490,7 @@
       <a href="#franchise">加盟</a>
     </nav>
     <a class="btn btn-amber" href="#cta">预约体验</a>
+    <a class="btn btn-ghost btn-sm btn-admin-entry" href="/admin/dashboard" title="加盟商管理后台">🔐 加盟商登录</a>
     <button class="menu-btn" aria-label="菜单" aria-expanded="false">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
@@ -488,6 +505,7 @@
     <a href="#entry">怎么玩</a>
     <a href="#audience">为谁而做</a>
     <a href="#franchise">加盟</a>
+    <a href="/admin/dashboard" style="color:var(--amber-deep);font-weight:700;">🔐 加盟商登录</a>
     <div class="mobile-cta">
       <a class="btn btn-amber" href="#cta">预约体验</a>
     </div>
@@ -900,6 +918,15 @@
       <a class="btn btn-amber" href="#cta" data-form="franchise">提交加盟意向 →</a>
     </div>
     <p class="fr-note">以上数字为估算区间，以直营示范点实测数据校准后为准。详情见《加盟商招募与运营手册》。</p>
+
+    <!-- 已是加盟商：直通管理后台 -->
+    <div class="fr-existing">
+      <div class="fr-existing-text">
+        <div class="fr-existing-title">已是加盟商？</div>
+        <div class="fr-existing-sub">登录管理后台查看今日营收、车队实况、推广任务与奖励</div>
+      </div>
+      <a class="btn btn-amber" href="/admin/dashboard">进入管理后台 →</a>
+    </div>
   </div>
 </section>
 
@@ -1020,6 +1047,7 @@
       <div style="margin-top:10px;">足不出户，开向远方</div>
       <div class="f-links">
         <a href="mailto:hello@fardrive.cn">联系邮箱：hello@fardrive.cn</a>
+        <a href="/admin/dashboard">🔐 加盟商后台</a>
         <a href="#top">回到顶部 ↑</a>
       </div>
     </div>

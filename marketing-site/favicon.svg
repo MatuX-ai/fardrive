@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="FarDrive 远驱">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E8A33D"/>
+      <stop offset="100%" stop-color="#C97F1F"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" ry="14" fill="url(#g)"/>
+  <g transform="translate(16 16) scale(1.3333)" fill="none" stroke="#16233A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="6" cy="6" r="2.4"/>
+    <circle cx="18" cy="18" r="2.4"/>
+    <path d="M8.2 7.6 17 16.4"/>
+    <path d="M6 3.5V2M2.5 6H1M20.5 18v1.5M18 20.5H16.5"/>
+  </g>
+</svg>
