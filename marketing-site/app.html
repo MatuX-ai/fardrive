@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="description" content="FarDrive 远驱 · 用户端 APP 原型（游戏化版）：黑暗森林地图点亮、选车、方向盘式远程驾驶、双人竞速、每日任务、成就徽章与赛季成长。">
+<meta name="description" content="FarDrive 远驱 · 用户端 APP 原型（游戏化版）：选地图（含场地下选车）、方向盘式远程驾驶、双人竞速、每日任务、成就徽章与赛季成长。">
 <title>FarDrive 远驱 · 用户端 APP 原型</title>
 <link rel="stylesheet" href="fardrive-app.css">
 </head>
@@ -34,6 +34,7 @@
         <button type="button" class="btn btn-amber" id="loginBtn">登 录</button>
       </div>
       <button type="button" class="login-skip" id="loginSkip">游客快速体验 →</button>
+      <button type="button" class="login-invite" id="loginInvite">🎁 输入邀请码</button>
       <p class="login-tip" id="loginTip">演示环境：验证码固定为 1234，不产生真实短信</p>
     </div>
   </div>
@@ -42,7 +43,9 @@
   <div class="app-screen" id="scr-main">
     <div class="app-top">
       <span class="at-l">Far<em>Drive</em> 远驱</span>
-      <span class="at-r"><i></i>GPS 已连接 · 低延迟</span>
+      <button class="at-me" id="atMe" aria-label="进入个人中心">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+      </button>
     </div>
 
     <!-- 玩家成长卡 -->
@@ -60,16 +63,16 @@
 
     <!-- 六个功能标签 -->
     <div class="app-tabs" id="appTabs">
-      <button data-tab="map" class="on">🗺️ 地图</button>
-      <button data-tab="cars">🚙 选车</button>
+      <button data-tab="trail">🧭 探索</button>
+      <button data-tab="site" class="on">🗺️ 选地图</button>
       <button data-tab="drive">🎮 驾驶</button>
       <button data-tab="race">🏁 比赛</button>
       <button data-tab="tasks">📋 任务</button>
       <button data-tab="ach">🏅 成就</button>
     </div>
 
-    <!-- 面板：地图 -->
-    <div class="scr-body on" id="pnMap">
+    <!-- 面板：探索地图（游戏化探索度屏） -->
+    <div class="scr-body" id="pnTrail" style="display:none;">
       <div class="map-wrap">
         <img class="map-bg" src="https://aka.doubaocdn.com/s/NgyWk1rwLk" alt="黑暗森林探索地图">
         <div class="map-ring">
@@ -89,8 +92,18 @@
       <p class="hint" style="margin:10px 2px 0;">👆 点按闪烁的光点即可前往点亮坐标，点亮越多奖励越丰厚</p>
     </div>
 
-    <!-- 面板：车库 -->
-    <div class="scr-body" id="pnCars">
+    <!-- 面板：选地图（含场地下选车 tab） -->
+    <div class="scr-body on" id="pnSite">
+      <!-- 二级 tab：选地图下的子 tab -->
+      <div class="site-subtabs">
+        <button class="on" data-subtab="cars">该场地 · 选车</button>
+        <button data-subtab="intro">场地介绍</button>
+        <button data-subtab="queue">排队情况</button>
+      </div>
+      <div class="site-context" style="padding:6px 4px 10px;font-size:12.5px;color:var(--muted,#B0B0B0);">
+        当前场地：<b style="color:#fff;" id="curSiteName">田园站 · 加盟商 A</b>
+        · 该场地共 <b id="curSiteCarCount">6</b> 辆车
+      </div>
       <div id="carList"></div>
       <div class="card" style="padding:13px;margin-top:12px;">
         <div style="display:flex;align-items:center;justify-content:space-between;">
@@ -108,6 +121,16 @@
 
     <!-- 面板：任务 -->
     <div class="scr-body" id="pnTasks">
+      <div class="task-sign-entry" id="taskSignEntry">
+        <div class="task-sign-l">
+          <div class="task-sign-ico">📅</div>
+          <div>
+            <div class="task-sign-title">每日签到</div>
+            <div class="task-sign-sub" id="taskSignSub">连签 0 天 · 今天未签</div>
+          </div>
+        </div>
+        <button class="task-sign-btn" id="taskSignBtn">去签到</button>
+      </div>
       <div class="task-head">每日任务 <span id="taskRefresh">每日 0 点刷新</span></div>
       <div id="tskRows"></div>
       <div class="task-head">赛季目标 <span id="seasonSub">田园站探索 100%</span></div>
@@ -135,7 +158,7 @@
     </div>
     <div class="row"><span>预计用时</span><b id="shTime">约 2 分钟</b></div>
     <div class="row"><span>出场车型</span><b id="shCar">北京吉普 212 型</b></div>
-    <button class="btn btn-amber go" id="shGo">🚗 出发驾驶 · 点亮坐标</button>
+    <button class="btn btn-amber go" id="shGo">🚗 出发 · 点亮坐标</button>
   </div>
 
   <!-- ---------- 通用弹窗与提示（壳体内） ---------- -->
@@ -150,6 +173,299 @@
     </div>
   </div>
   <div class="toast" id="toastMsg"></div>
+
+  <!-- 支付弹层 -->
+  <div class="pay-view" id="payView">
+    <!-- 选择支付方式 -->
+    <div class="pay-stage" id="payStageChoose">
+      <div class="pay-head">
+        <button class="pay-back" id="payBack" aria-label="返回">←</button>
+        <span class="pay-title">选择支付方式</span>
+        <button class="pay-close" id="payClose" aria-label="关闭">✕</button>
+      </div>
+      <div class="pay-amt-card">
+        <div class="pay-amt-lb">订单金额</div>
+        <div class="pay-amt-vl"><b id="payAmt">¥0</b><span id="payAmtCoupon" class="pay-amt-coupon"></span></div>
+        <div class="pay-amt-sub" id="payAmtSub">田园站 · 北京吉普 212 型 · 一场</div>
+      </div>
+
+      <!-- 可用优惠券 -->
+      <div class="pay-coupon" id="payCouponBox" style="display:none;">
+        <div class="pay-coupon-row">
+          <div style="flex:1;">
+            <div class="pay-coupon-hd">🎁 可用优惠券</div>
+            <div class="pay-coupon-info" id="payCouponInfo">¥10 满 ¥30 可用 · 剩 7 天</div>
+          </div>
+          <label class="pay-switch">
+            <input type="checkbox" id="payCouponUse" checked>
+            <span class="pay-switch-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="pay-methods">
+        <div class="pay-method" data-method="wechat">
+          <div class="pay-m-ico" style="background:#07c160;"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.5 4C5.4 4 2 6.9 2 10.5c0 2 1.1 3.7 2.8 4.9-.1.4-.6 1.9-.7 2.2-.1.4.2.4.4.3.1-.1 2.4-1.6 2.9-2 .7.2 1.4.3 2.1.3h.4c-.1-.5-.2-1-.2-1.5 0-3.6 3.4-6.5 7.6-6.5h.7C16.8 5.4 13.4 4 9.5 4zM7 8.5c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm5 0c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1zm9.5 5.5c0-3-3-5.5-6.5-5.5S8.5 11 8.5 14s3 5.5 6.5 5.5c.6 0 1.2-.1 1.7-.2.4.3 2.2 1.5 2.4 1.5.2.1.4 0 .3-.2 0-.2-.4-1.4-.5-1.7 1.6-1 2.6-2.6 2.6-4.4zm-8.5-1c-.4 0-.8-.4-.8-.8s.4-.8.8-.8.8.4.8.8-.3.8-.8.8zm4 0c-.4 0-.8-.4-.8-.8s.4-.8.8-.8.8.4.8.8-.3.8-.8.8z"/></svg></div>
+          <div class="pay-m-mid"><b>微信支付</b><span>使用微信扫码支付</span></div>
+          <span class="pay-m-check"></span>
+        </div>
+        <div class="pay-method" data-method="alipay">
+          <div class="pay-m-ico" style="background:#1677ff;"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.5 2h-13A1.5 1.5 0 0 0 4 3.5v17A1.5 1.5 0 0 0 5.5 22h13a1.5 1.5 0 0 0 1.5-1.5v-17A1.5 1.5 0 0 0 18.5 2zM7.6 17.3l-.7-2.5h-2l-.6 2.5H2.5L5.4 8.7h2.4l2.9 8.6H7.6zm6.5-8.6h2.2l-2.3 8.6H11.7l-2.3-8.6h2.2l1.3 6 1.2-6zm5.7 8.6c-1 0-1.8-.3-2.3-.9l-.3 1.1-2.3-.4.1-1c.1-.5.2-1 .4-1.6.3-1.1 1.4-5.5 1.4-5.5h2.2l-.3 1.1c.5-.7 1.2-1.1 2.1-1.1 1.7 0 2.7 1.6 2.4 3.7-.3 2.1-1.7 3.6-3.4 3.6zm-1.8-2c.9 0 1.7-1 1.9-2.3.2-1.2-.3-2.3-1.2-2.3-.9 0-1.7 1-1.9 2.3-.2 1.2.3 2.3 1.2 2.3z"/></svg></div>
+          <div class="pay-m-mid"><b>支付宝</b><span>使用支付宝扫码支付</span></div>
+          <span class="pay-m-check"></span>
+        </div>
+        <div class="pay-method" data-method="coin" id="payMethodCoin">
+          <div class="pay-m-ico" style="background:linear-gradient(135deg,#E8A33D,#C97F1F);"><svg viewBox="0 0 24 24" fill="none" stroke="#16233A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9 9.5a3 3 0 0 1 6 0c0 1.5-3 2-3 4M12 17.5h.01"/></svg></div>
+          <div class="pay-m-mid"><b>金币支付</b><span id="payCoinBalance">金币余额 0（等价 ¥0）</span></div>
+          <span class="pay-m-check"></span>
+        </div>
+      </div>
+
+      <button class="pay-confirm btn btn-amber" id="payConfirm">确认支付 <span id="payConfirmAmt">¥0</span></button>
+      <p class="pay-tip">支付即视为同意《FarDrive 用户服务协议》</p>
+    </div>
+
+    <!-- 待支付：扫码 + 倒计时 -->
+    <div class="pay-stage" id="payStagePending">
+      <div class="pay-head">
+        <button class="pay-back" id="payPendingBack" aria-label="返回">←</button>
+        <span class="pay-title" id="payPendingTitle">微信支付</span>
+        <button class="pay-close" id="payPendingClose" aria-label="关闭">✕</button>
+      </div>
+      <div class="pay-pending-body">
+        <div class="pay-qr-box">
+          <div class="pay-qr" id="payQr">
+            <!-- SVG QR 占位（演示） -->
+            <svg viewBox="0 0 100 100" width="100%" height="100%" id="payQrSvg">
+              <rect width="100" height="100" fill="#fff"/>
+              <g fill="#0B1526">
+                <rect x="10" y="10" width="20" height="20"/><rect x="14" y="14" width="12" height="12" fill="#fff"/><rect x="18" y="18" width="4" height="4"/>
+                <rect x="70" y="10" width="20" height="20"/><rect x="74" y="14" width="12" height="12" fill="#fff"/><rect x="78" y="18" width="4" height="4"/>
+                <rect x="10" y="70" width="20" height="20"/><rect x="14" y="74" width="12" height="12" fill="#fff"/><rect x="18" y="78" width="4" height="4"/>
+                <rect x="35" y="15" width="4" height="4"/><rect x="45" y="15" width="4" height="4"/><rect x="55" y="20" width="4" height="4"/>
+                <rect x="15" y="35" width="4" height="4"/><rect x="35" y="35" width="4" height="4"/><rect x="50" y="40" width="4" height="4"/>
+                <rect x="65" y="35" width="4" height="4"/><rect x="25" y="50" width="4" height="4"/><rect x="45" y="55" width="4" height="4"/>
+                <rect x="65" y="50" width="4" height="4"/><rect x="15" y="65" width="4" height="4"/><rect x="35" y="65" width="4" height="4"/>
+                <rect x="55" y="65" width="4" height="4"/><rect x="75" y="65" width="4" height="4"/><rect x="40" y="80" width="4" height="4"/>
+                <rect x="55" y="85" width="4" height="4"/><rect x="70" y="80" width="4" height="4"/>
+              </g>
+            </svg>
+          </div>
+          <div class="pay-qr-cap">
+            <div class="pay-qr-cap-l" id="payQrLb">使用 <b id="payQrMethod">微信</b> 扫码支付</div>
+            <div class="pay-qr-cap-r">¥<b id="payQrAmt">0</b></div>
+          </div>
+        </div>
+        <div class="pay-countdown">
+          <span>支付剩余时间</span>
+          <b id="payCountdown">15:00</b>
+        </div>
+        <div class="pay-order-info">
+          <div><span>订单号</span><b id="payOrderId">-</b></div>
+          <div><span>创建时间</span><b id="payOrderTime">-</b></div>
+        </div>
+        <button class="pay-sim-paid btn btn-amber" id="paySimPaid">模拟支付成功</button>
+        <button class="pay-sim-fail btn btn-ghost" id="paySimFail">模拟支付失败</button>
+        <p class="pay-test-tip">🔧 原型演示按钮 · 生产环境移除</p>
+      </div>
+    </div>
+
+    <div class="toast" id="toastMsg"></div>
+
+  <!-- 失败 -->
+    <div class="pay-stage" id="payStageFail">
+      <div class="pay-fail">
+        <div class="pay-fail-ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </div>
+        <h3 id="payFailTitle">支付失败</h3>
+        <p id="payFailBody">支付超时或被取消，请重试</p>
+        <div class="pay-fail-btns">
+          <button class="btn btn-amber" id="payFailRetry">重新支付</button>
+          <button class="btn btn-ghost" id="payFailBack">返回选地图</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 每日签到 -->
+  <div class="sign-view" id="signView">
+    <div class="sign-head">
+      <button class="me-back" id="signBack" aria-label="返回">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
+      <span class="me-title">每日签到</span>
+      <span class="sign-streak" id="signStreak">连签 0 天</span>
+    </div>
+    <div class="sign-body">
+      <div class="sign-tip" id="signTip">连续签到 7 天可领终极大奖 🎁</div>
+      <div class="sign-grid" id="signGrid"></div>
+      <button class="btn btn-amber sign-btn" id="signBtn">立即签到</button>
+      <div class="sign-stat" id="signStat">本周累计 +0 金币 · 0 张券</div>
+    </div>
+  </div>
+
+  <!-- 邀请好友面板（浮在个人中心内部） -->
+  <div class="me-panel" id="mePanelInvite">
+    <div class="me-panel-head">
+      <button class="me-p-back" data-me-back>← 返回</button>
+      <span class="me-p-title">邀请好友</span>
+    </div>
+    <div class="invite-block">
+      <div class="invite-head">
+        <div class="invite-ico">🎁</div>
+        <div>
+          <div class="invite-title">邀请 1 位好友，各得 ¥10 体验券</div>
+          <div class="invite-sub">好友注册时填你的邀请码，你和 TA 各得 1 张满 30 减 10 体验券</div>
+        </div>
+      </div>
+      <div class="invite-code-card">
+        <div class="invite-code-lb">你的邀请码</div>
+        <div class="invite-code-val" id="inviteCodeVal">FD000000</div>
+        <button class="btn btn-amber invite-copy" id="inviteCopyBtn">复制邀请码</button>
+      </div>
+      <div class="invite-or">或 分享下方链接给好友</div>
+      <div class="invite-share-row">
+        <button class="invite-share-btn" data-share="wechat">💬 微信</button>
+        <button class="invite-share-btn" data-share="link">🔗 复制链接</button>
+        <button class="invite-share-btn" data-share="poster">🖼 海报</button>
+      </div>
+      <div class="invite-stat-card">
+        <div class="invite-stat-row"><span>已邀请好友</span><b id="inviteCnt">0</b></div>
+        <div class="invite-stat-row"><span>累计获得券</span><b id="inviteCouponCnt">0</b> 张</div>
+        <div class="invite-stat-row"><span>累计金币奖励</span><b id="inviteGoldTotal">+0</b></div>
+        <div class="invite-stat-row"><span>累计经验奖励</span><b id="inviteExpTotal">+0</b></div>
+        <div class="invite-stat-row"><span>累计段位分</span><b id="inviteSeasonTotal">+0</b></div>
+        <div class="invite-stat-row muted"><span>本月剩余</span><b id="inviteLimit">本月还可邀请 20 人</b></div>
+      </div>
+
+      <div class="invite-reward-rule">
+        <div class="invite-rr-hd">🎁 双向奖励规则</div>
+        <div class="invite-rr-row"><span>你（被邀请）</span><b>+100 金币 + ¥10 券</b></div>
+        <div class="invite-rr-row"><span>好友（邀请人）</span><b>+200 金币 + 50 经验 + 15 段位分 + ¥10 券</b></div>
+      </div>
+
+      <div class="invite-list-card">
+        <div class="invite-list-hd">最近邀请 <span class="muted" id="inviteListHint">(最近 10 条)</span></div>
+        <div class="invite-list" id="inviteList">
+          <div class="me-empty" style="padding:18px 14px;">还没邀请过朋友 · 分享上方邀请码开启奖励 ✨</div>
+        </div>
+      </div>
+
+      <div class="invite-tip">💡 输入邀请码入口：登录页 → "游客快速体验" 下方 → 输入邀请码</div>
+    </div>
+  </div>
+
+  <!-- 个人中心（浮层） -->
+  <div class="me-view" id="meView">
+    <div class="me-head">
+      <button class="me-back" id="meBack" aria-label="返回">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
+      <span class="me-title">个人中心</span>
+      <button class="me-set" id="meSet" aria-label="设置">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+
+    <div class="me-scroll">
+      <!-- 身份卡 -->
+      <div class="me-id">
+        <div class="me-ava">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div class="me-id-mid">
+          <div class="me-id-line1">
+            <span class="me-lv" id="meLv">Lv.1</span>
+            <span class="me-name" id="meName">探索者</span>
+            <span class="me-title-tag" id="meTitleTag">远驱新秀</span>
+          </div>
+          <div class="me-id-line2">
+            <span>📍 已点亮 <b id="meLit">0</b> / <span id="meTotal">0</span> 坐标</span>
+            <span>🛞 累计 <b id="meKm">0.0</b> km</span>
+            <span>🔥 连点 <b id="meStreak">0</b> 天</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 钱包卡 -->
+      <div class="me-wallet">
+        <div class="me-w-cell">
+          <span class="me-w-lb">金币余额</span>
+          <span class="me-w-vl coin" id="meGold">0</span>
+          <button class="me-w-btn" id="meCharge">充值</button>
+        </div>
+        <div class="me-w-cell" id="meCouponCell">
+          <span class="me-w-lb">优惠券</span>
+          <span class="me-w-vl" id="meCoupon">0 张</span>
+          <button class="me-w-btn ghost" id="meCouponBtn">查看</button>
+        </div>
+      </div>
+
+      <!-- 模块导航 -->
+      <div class="me-grid">
+        <a class="me-nav" data-me-nav="orders"><span class="me-n-ico">📜</span><b>订单记录</b><span id="meOrderCnt">0 笔</span></a>
+        <a class="me-nav" data-me-nav="medals"><span class="me-n-ico">🏅</span><b>我的徽章</b><span id="meMedalCnt">0 / 6</span></a>
+        <a class="me-nav" data-me-nav="footprints"><span class="me-n-ico">🗺️</span><b>足迹地图</b><span>1 个站点</span></a>
+        <a class="me-nav" data-me-nav="invite"><span class="me-n-ico">🎁</span><b>邀请好友</b><span class="me-n-tag">HOT</span></a>
+      </div>
+
+      <!-- 订单记录（默认隐藏） -->
+      <div class="me-panel" id="mePanelOrders">
+        <div class="me-panel-head">
+          <button class="me-p-back" data-me-back>← 返回</button>
+          <span class="me-p-title">订单记录</span>
+        </div>
+        <div class="me-tabs-mini" id="meOrderTabs">
+          <button class="on" data-otype="all">全部</button>
+          <button data-otype="drive">单人探索</button>
+          <button data-otype="race">双人比赛</button>
+        </div>
+        <div class="me-order-list" id="meOrderList">
+          <div class="me-empty">暂无订单，去地图点亮坐标吧 ✨</div>
+        </div>
+      </div>
+
+      <!-- 徽章（默认隐藏） -->
+      <div class="me-panel" id="mePanelMedals">
+        <div class="me-panel-head">
+          <button class="me-p-back" data-me-back>← 返回</button>
+          <span class="me-p-title">我的徽章</span>
+        </div>
+        <div class="ach-grid" id="meMedalGrid"></div>
+      </div>
+
+      <!-- 优惠券（默认隐藏） -->
+      <div class="me-panel" id="mePanelCoupons">
+        <div class="me-panel-head">
+          <button class="me-p-back" data-me-back>← 返回</button>
+          <span class="me-p-title">我的优惠券</span>
+        </div>
+        <div class="me-coupon-tabs" id="meCouponTabs">
+          <button class="on" data-cstat="valid">可用 <span class="cnt" id="meCntValid">0</span></button>
+          <button data-cstat="used">已使用 <span class="cnt" id="meCntUsed">0</span></button>
+          <button data-cstat="expired">已过期 <span class="cnt" id="meCntExpired">0</span></button>
+        </div>
+        <div class="me-coupon-list" id="meCouponList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新手引导（Coach Marks） -->
+  <div class="coach-mask" id="coachMask">
+    <div class="coach-spot" id="coachSpot"></div>
+    <div class="coach-card" id="coachCard">
+      <div class="step" id="coachStep">第 1 步 / 共 3 步</div>
+      <h3 id="coachTitle">选一个坐标出发</h3>
+      <p id="coachBody">点击地图上任意一个会闪烁的光点，查看坐标详情。</p>
+      <div class="coach-foot">
+        <div class="dots" id="coachDots">
+          <span class="d on"></span><span class="d"></span><span class="d"></span>
+        </div>
+        <button class="btn btn-amber" id="coachNext">下一步 →</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ===================== 驾驶舱（方向盘式 · 横屏） ===================== -->
@@ -176,6 +492,112 @@
     <b id="comboVal">×1</b><span id="comboLbl">连击</span>
   </div>
   <div class="ck-banner" id="ckBanner">🎯 坐标点亮成功！</div>
+
+  <div class="ck-estop-active" id="ckEStopActive">🛑 紧急制动已触发 · 长按急停按钮 1 秒解除</div>
+
+  <!-- 车端故障：摄像头丢失（全屏黑屏 + 白色相机图标） -->
+  <div class="ck-cam-lost" id="ckCamLost">
+    <div class="cam-lost-ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+    </div>
+    <h3>画面信号中断</h3>
+    <p>摄像头正在尝试恢复，<br>车辆已自动减速，请耐心等待</p>
+    <div class="cam-lost-tip">10 秒未恢复将自动结束订单并全额退款</div>
+  </div>
+
+  <!-- 车端故障：电机过热（黄色中央弹窗） -->
+  <div class="ck-motor-hot" id="ckMotorHot">
+    <div class="motor-ico">🌡️</div>
+    <h3>车辆电机温度过高</h3>
+    <p>即将自动降速至 50%<br>温度回落会自动恢复</p>
+    <div class="motor-countdown">自动降速倒计时 <b id="ckMotorCnt">5</b> 秒</div>
+    <button class="btn btn-ghost motor-now" id="ckMotorNow">立即降速</button>
+  </div>
+
+  <!-- 车端故障：紧急（红色全屏） -->
+  <div class="ck-emergency" id="ckEmergency">
+    <div class="emergency-ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
+    <h2 id="ckEmTitle">车辆故障</h2>
+    <p class="sub" id="ckEmSub">请立即停止驾驶 · 订单将自动结束并全额退款</p>
+    <div class="ck-em-countdown">
+      <div class="em-cd-lb">自动结束订单倒计时</div>
+      <b id="ckEmCnt">3</b>
+    </div>
+    <div class="ck-em-tip" id="ckEmTip">已赠送体验保障券（满 30 减 10，7 天有效）</div>
+    <div class="ck-em-btns">
+      <button class="btn btn-amber" id="ckEmConfirm">我已知晓，立即结束</button>
+      <button class="btn btn-ghost" id="ckEmReport">一键报修</button>
+    </div>
+  </div>
+
+  <!-- 故障 HUD 提示（中等故障：IMU/GPS） -->
+  <div class="ck-sensor-warn" id="ckSensorWarn">
+    <span id="ckSensorTxt">⚠️ IMU 数据异常 · 不影响驾驶</span>
+  </div>
+
+  <!-- 换电导航：HUD 半透明箭头 -->
+  <div class="ck-battery-nav" id="ckBatNav">
+    <div class="bat-nav-arrow" id="ckBatNavArrow">⬆</div>
+    <div class="bat-nav-info">
+      <div class="bat-nav-title" id="ckBatNavTitle">前往换电站</div>
+      <div class="bat-nav-sub" id="ckBatNavSub">约 300m · 预计 2 分钟</div>
+    </div>
+    <div class="bat-nav-bat">🔋 <b id="ckBatNavBat">25%</b></div>
+  </div>
+
+  <!-- 低电量弹窗（< 15%） -->
+  <div class="ck-lowbat" id="ckLowBat">
+    <div class="lowbat-ico">🔋</div>
+    <h3>电量过低，请前往换电站</h3>
+    <p id="ckLowBatP">已自动开启龟速模式（30%），剩余续航约 <b id="ckLowBatMin">1</b> 分钟</p>
+    <div class="lowbat-stat">
+      <div><span>电量</span><b id="ckLowBatPct">12%</b></div>
+      <div><span>最近换电站</span><b id="ckLowBatDist">300m</b></div>
+    </div>
+    <button class="btn btn-amber" id="ckLowBatOk">立即前往</button>
+  </div>
+
+  <!-- 趴窝全屏（< 5%） -->
+  <div class="ck-dead" id="ckDead">
+    <div class="dead-ico">🪫</div>
+    <h2>电量耗尽 · 已自动停车</h2>
+    <p class="dead-sub">车辆已安全驻车，请选择处理方式</p>
+    <div class="dead-countdown">
+      <span>救援确认倒计时</span>
+      <b id="ckDeadCnt">10</b>
+    </div>
+    <div class="dead-card">
+      <div><span>救援费用</span><b id="ckDeadFee">¥30</b></div>
+      <div><span>已支付车费</span><b id="ckDeadPaid">¥15</b></div>
+      <div><span>本次退款</span><b id="ckDeadRefund">¥0</b></div>
+    </div>
+    <div class="dead-btns">
+      <button class="btn btn-amber" id="ckDeadRescue">确认救援</button>
+      <button class="btn btn-ghost" id="ckDeadEnd">直接结束（不退款）</button>
+    </div>
+  </div>
+
+  <!-- 故障模拟器（QA 用） -->
+  <div class="ck-fail-debug" id="ckFailDebug">
+    <span class="lb">⚠️ 模拟故障</span>
+    <button data-fail="cam">摄像头</button>
+    <button data-fail="imu">IMU</button>
+    <button data-fail="gps">GPS</button>
+    <button data-fail="motor">电机</button>
+    <button data-fail="servo">舵机</button>
+    <button data-fail="flip">翻车</button>
+  </div>
+
+  <!-- 电量模拟（QA 用） -->
+  <div class="ck-bat-debug" id="ckBatDebug">
+    <span class="lb">🔋 电量</span>
+    <button data-bat="full">满电</button>
+    <button data-bat="low">低电</button>
+    <button data-bat="critical">临界</button>
+    <button data-bat="dead">趴窝</button>
+  </div>
 
   <div class="ck-controls">
     <div class="ck-left">
@@ -209,7 +631,59 @@
 
   <div class="ck-top-right">
     <button class="ck-quit" id="ckQuit">结束驾驶</button>
-    <button class="ck-estop" id="ckEStop">急停</button>
+  </div>
+
+  <!-- 右下急停：和踏板同区，右手拇指自然可及 -->
+  <div class="ck-bottom-right">
+    <button class="ck-estop" id="ckEStop" aria-label="紧急制动，长按1秒触发">
+      <svg class="ck-estop-ring" viewBox="0 0 60 60" aria-hidden="true">
+        <circle cx="30" cy="30" r="26" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="3"/>
+        <circle id="ckEStopArc" cx="30" cy="30" r="26" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-dasharray="163.36" stroke-dashoffset="163.36" transform="rotate(-90 30 30)"/>
+      </svg>
+      <span class="ck-estop-label">急停</span>
+    </button>
+  </div>
+
+  <!-- 网络异常：L1/L2 顶部黄横幅 -->
+  <div class="ck-net-warn" id="ckNetWarn">
+    <span id="ckNetWarnTxt">⚠️ 信号不稳定，请注意驾驶</span>
+  </div>
+
+  <!-- 网络异常：L3 重连全屏蒙层 -->
+  <div class="ck-reconnect" id="ckReconnect">
+    <div class="ck-rec-spinner"></div>
+    <h3>正在重连...</h3>
+    <p>第 <b id="ckRecCnt">1</b> 次重试 · 车辆已自动减速</p>
+    <p class="ck-rec-sub">请耐心等待，画面恢复后将自动继续</p>
+  </div>
+
+  <!-- 网络异常：L4 全屏失败 + 退款信息 -->
+  <div class="ck-net-fail" id="ckNetFail">
+    <div class="ck-fail-ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </div>
+    <h2>连接中断</h2>
+    <p class="sub">订单已自动结束，车辆已安全驻车</p>
+    <div class="ck-fail-card">
+      <div class="ck-fail-row"><span>本次驾驶</span><b id="ckFailKm">0 m</b></div>
+      <div class="ck-fail-row"><span>实际用时</span><b id="ckFailTime">0 秒</b></div>
+      <div class="ck-fail-row"><span>已支付</span><b id="ckFailPaid">¥0</b></div>
+      <div class="ck-fail-row gold"><span>退款金额</span><b id="ckFailRefund">¥0</b></div>
+      <div class="ck-fail-row gift"><span>额外补偿</span><b>+1 张体验保障券（满 30 减 10）</b></div>
+    </div>
+    <div class="ck-fail-btns">
+      <button class="btn btn-amber" id="ckFailHome">返回首页</button>
+      <button class="btn btn-ghost" id="ckFailSupport">联系客服</button>
+    </div>
+  </div>
+
+  <!-- 网络模拟器（QA 调试用，UI 仅在原型演示时可触发） -->
+  <div class="ck-net-debug" id="ckNetDebug">
+    <span class="lb">🌐 模拟弱网</span>
+    <button data-net="good">正常</button>
+    <button data-net="lag">延迟</button>
+    <button data-net="loss">丢包</button>
+    <button data-net="off">断连</button>
   </div>
 
   <!-- 到达/结算浮层 -->
@@ -305,7 +779,7 @@
     <p id="rdSub">用时 0:42.1 · 全程领先</p>
     <div class="ck-summary" style="width:min(330px,86%);text-align:left;">
       <div class="srow"><span>名次</span><b id="rdRank">第 1 名</b></div>
-      <div class="srow gold"><span>奖金池份额</span><b id="rdPool">+400 金币</b></div>
+      <div class="srow gold"><span>奖金池份额</span><b id="rdPool">+500 金币</b></div>
       <div class="srow"><span>段位积分</span><b id="rdPts">+25</b></div>
       <div class="srow"><span>晋级进度</span><b id="rdTier">距白银 Ⅱ 晋级还差 1 胜</b></div>
     </div>
