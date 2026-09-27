@@ -16,9 +16,9 @@
 **/.cache/
 **/.turbo/
 
-# admin-backend 的构建脚本会把 dist 同步到 marketing-site/admin/，
-# 此目录是产物而非源码，必须忽略。
-marketing-site/admin/
+# admin-backend 的构建产物（此前曾忽略，现改为提交到仓库供 Vercel 部署）
+# 如需在 CI 中自动构建，可重新启用忽略并配置 Vercel buildCommand
+# marketing-site/admin/
 
 # --- 临时预览 / 调试目录（Qoder IDE 缓存 + 截屏脚本） ---
 .preview/
