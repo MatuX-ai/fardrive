@@ -12,7 +12,10 @@ const statusMap = {
   standardPart: { 1: '正常', 2: '建议更换', 3: '已更换' },
   maintenance: { 0: '待处理', 1: '已完成' },
   accident: { 0: '待定责', 1: '已结案' },
-  otaTask: { 0: '待执行', 1: '升级中', 2: '已完成', 3: '失败' }
+  otaTask: { 0: '待执行', 1: '升级中', 2: '已完成', 3: '失败' },
+  promotion: { 0: '待审核', 1: '已通过', 2: '已驳回' },
+  promotionTask: { 0: '进行中', 1: '审核中', 2: '已完成' },
+  reward: { 0: '待发放', 1: '发放中', 2: '已发放' }
 }
 
 export const getStatusText = (type, status) => statusMap[type]?.[status] || '未知'
@@ -135,6 +138,83 @@ export const mockOrders = [
   { id: 1, vehicleId: 1, siteId: 1, franchiseeId: 1, durationMin: 30, amount: 128, platformAmount: 19.2, franchiseeAmount: 108.8, status: 1, createdAt: '2026-09-07 09:00:00' },
   { id: 2, vehicleId: 2, siteId: 1, franchiseeId: 1, durationMin: 60, amount: 238, platformAmount: 35.7, franchiseeAmount: 202.3, status: 1, createdAt: '2026-09-07 08:30:00' },
   { id: 3, vehicleId: 3, siteId: 2, franchiseeId: 3, durationMin: 45, amount: 168, platformAmount: 30.24, franchiseeAmount: 137.76, status: 2, createdAt: '2026-09-06 16:00:00' }
+]
+export const mockPromotions = [
+  { id: 1, franchiseeId: 1, type: 'video', title: '夜间森林竞速第一视角', platform: '抖音', reach: 58200, likes: 4120, comments: 638, reward: 300, status: 1, createdAt: '2026-09-05 20:12:00', submittedAt: '2026-09-05 20:12:00' },
+  { id: 2, franchiseeId: 1, type: 'live', title: '周末双人越野直播赛', platform: '视频号', reach: 23600, likes: 1520, comments: 402, reward: 200, status: 1, createdAt: '2026-09-06 19:30:00', submittedAt: '2026-09-06 19:30:00' },
+  { id: 3, franchiseeId: 3, type: 'invite', title: '门店开业邀请有礼', platform: '线下', reach: 8600, likes: 0, comments: 0, reward: 150, status: 0, createdAt: '2026-09-07 10:05:00', submittedAt: '2026-09-07 10:05:00' },
+  { id: 4, franchiseeId: 3, type: 'content', title: '加盟店实拍素材包', platform: '小红书', reach: 12400, likes: 986, comments: 152, reward: 100, status: 0, createdAt: '2026-09-07 11:40:00', submittedAt: '2026-09-07 11:40:00' },
+  { id: 5, franchiseeId: 1, type: 'video', title: '旗舰座舱开箱体验', platform: 'B站', reach: 34800, likes: 2680, comments: 415, reward: 250, status: 2, createdAt: '2026-09-04 14:22:00', submittedAt: '2026-09-04 14:22:00' }
+]
+export const mockPromotionTasks = [
+  { id: 1, type: 'video', title: '拍摄一条夜间越野短视频', desc: '15-60 秒，带 #FarDrive夜驾 话题，发布到抖音或视频号', target: 1, deadline: '2026-09-15', rewardCash: 300, rewardXp: 120, status: 1 },
+  { id: 2, type: 'invite', title: '邀请 5 位新玩家注册', desc: '通过推广码邀请新用户完成注册与首次驾驶', target: 5, deadline: '2026-09-20', rewardCash: 150, rewardXp: 80, status: 0 },
+  { id: 3, type: 'live', title: '周末直播一场双人竞速', desc: '直播时长不少于 30 分钟，画面清晰可辨认场地', target: 1, deadline: '2026-09-13', rewardCash: 200, rewardXp: 100, status: 2 },
+  { id: 4, type: 'content', title: '上传门店实拍素材 3 张', desc: '含门头、设备、玩家体验各一张，用于平台素材库', target: 3, deadline: '2026-09-30', rewardCash: 100, rewardXp: 60, status: 0 }
+]
+export const mockPromotionMaterials = [
+  { id: 1, title: '开业宣传海报（竖版）', tag: '海报', size: '2480×3508 PNG · 8.2 MB', downloads: 126 },
+  { id: 2, title: '夜间越野 15s 竖屏视频', tag: '视频', size: '1080×1920 MP4 · 24 MB', downloads: 238 },
+  { id: 3, title: '朋友圈推广文案 5 条', tag: '文案', size: 'DOCX · 12 KB', downloads: 312 },
+  { id: 4, title: '门店灯箱设计源文件', tag: '设计', size: 'AI · 46 MB', downloads: 45 },
+  { id: 5, title: '双人竞速横版海报', tag: '海报', size: '3508×2480 PNG · 9.6 MB', downloads: 98 },
+  { id: 6, title: '旗舰座舱 30s 宣传片', tag: '视频', size: '1920×1080 MP4 · 58 MB', downloads: 167 }
+]
+export const mockPromotionCodes = [
+  { id: 1, franchiseeId: 1, code: 'BJ-YYX-2026', totalInvites: 86, totalOrders: 42 },
+  { id: 2, franchiseeId: 3, code: 'GZ-JJ-2026', totalInvites: 53, totalOrders: 21 }
+]
+export const mockPromotionTrend = {
+  1: [
+    { date: '09-01', reach: 12400, interactions: 980, invites: 6, orders: 3, reward: 0 },
+    { date: '09-02', reach: 15800, interactions: 1260, invites: 9, orders: 4, reward: 0 },
+    { date: '09-03', reach: 18200, interactions: 1540, invites: 11, orders: 5, reward: 100 },
+    { date: '09-04', reach: 21600, interactions: 1890, invites: 13, orders: 6, reward: 0 },
+    { date: '09-05', reach: 38200, interactions: 3280, invites: 18, orders: 9, reward: 300 },
+    { date: '09-06', reach: 44600, interactions: 3960, invites: 22, orders: 11, reward: 200 },
+    { date: '09-07', reach: 23800, interactions: 1720, invites: 7, orders: 4, reward: 0 }
+  ],
+  3: [
+    { date: '09-01', reach: 6800, interactions: 420, invites: 3, orders: 1, reward: 0 },
+    { date: '09-02', reach: 8200, interactions: 510, invites: 4, orders: 2, reward: 0 },
+    { date: '09-03', reach: 9600, interactions: 630, invites: 5, orders: 2, reward: 50 },
+    { date: '09-04', reach: 11200, interactions: 780, invites: 6, orders: 3, reward: 0 },
+    { date: '09-05', reach: 13800, interactions: 920, invites: 7, orders: 3, reward: 0 },
+    { date: '09-06', reach: 15400, interactions: 1080, invites: 8, orders: 4, reward: 0 },
+    { date: '09-07', reach: 8600, interactions: 460, invites: 2, orders: 1, reward: 0 }
+  ]
+}
+export const mockPlatformMix = {
+  1: [
+    { name: '抖音', value: 58200 },
+    { name: '视频号', value: 23600 },
+    { name: 'B站', value: 34800 },
+    { name: '小红书', value: 12600 },
+    { name: '线下', value: 8600 }
+  ],
+  3: [
+    { name: '小红书', value: 12400 },
+    { name: '抖音', value: 18200 },
+    { name: '线下', value: 9600 }
+  ]
+}
+export const mockContentTop = {
+  1: [
+    { rank: 1, title: '夜间森林竞速第一视角', type: 'video', platform: '抖音', reach: 58200, likes: 4120, ratio: 7.1 },
+    { rank: 2, title: '旗舰座舱开箱体验', type: 'video', platform: 'B站', reach: 34800, likes: 2680, ratio: 7.7 },
+    { rank: 3, title: '周末双人越野直播赛', type: 'video', platform: '视频号', reach: 23600, likes: 1520, ratio: 6.4 },
+    { rank: 4, title: '场地晨雾航拍', type: 'image', platform: '小红书', reach: 12600, likes: 986, ratio: 7.8 }
+  ],
+  3: [
+    { rank: 1, title: '山地公园陡坡挑战', type: 'video', platform: '抖音', reach: 18200, likes: 1280, ratio: 7.0 },
+    { rank: 2, title: '加盟店实拍素材包', type: 'image', platform: '小红书', reach: 12400, likes: 986, ratio: 7.9 }
+  ]
+}
+export const mockRewards = [
+  { id: 1, franchiseeId: 1, type: 'cash', amount: 300, source: '夜间森林竞速第一视角', status: 2, createdAt: '2026-09-05 21:00:00', paidAt: '2026-09-06 10:00:00' },
+  { id: 2, franchiseeId: 1, type: 'cash', amount: 200, source: '周末双人越野直播赛', status: 2, createdAt: '2026-09-06 20:00:00', paidAt: '2026-09-07 09:30:00' },
+  { id: 3, franchiseeId: 3, type: 'cash', amount: 150, source: '门店开业邀请有礼', status: 0, createdAt: '2026-09-07 10:30:00', paidAt: null },
+  { id: 4, franchiseeId: 1, type: 'point', amount: 500, source: '季度活跃奖励', status: 2, createdAt: '2026-09-01 09:00:00', paidAt: '2026-09-01 09:00:00' }
 ]
 
 export const findSite = (siteId) => mockSites.find(s => s.id === siteId)
