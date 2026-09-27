@@ -3,12 +3,12 @@
 
   // ===================== 数据模型 =====================
   const cars = [
-    { id:'212', name:'北京吉普 212 型', tag:'入门 · 扎实耐造', cost:15, speed:60, acc:50, grip:70, lockLv:1, img:'https://aka.doubaocdn.com/s/jwOMQvUr9b' },
-    { id:'cherokee', name:'切诺基型', tag:'中档 · 从容四驱', cost:28, speed:70, acc:62, grip:76, lockLv:1, img:'https://aka.doubaocdn.com/s/ZrrRkURHCO', hot:true },
-    { id:'monster', name:'高性能大脚车', tag:'高性能 · 姿态拉满', cost:45, speed:88, acc:75, grip:65, lockLv:6, img:'https://aka.doubaocdn.com/s/uMSayI1QSR' },
-    { id:'crawler', name:'岩石攀爬车', tag:'攀爬专精 · 陡坡克星', cost:35, speed:55, acc:48, grip:92, lockLv:4, img:'https://aka.doubaocdn.com/s/t38XfTuQrh' },
-    { id:'kart', name:'沙漠卡丁车', tag:'竞速型 · 高速漂移', cost:40, speed:92, acc:85, grip:58, lockLv:8, img:'https://aka.doubaocdn.com/s/LyAhaA8Nss' },
-    { id:'beast', name:'越野怪兽', tag:'顶级 · 全地形王者', cost:65, speed:95, acc:80, grip:80, lockLv:12, img:'https://aka.doubaocdn.com/s/0nsKUEzj8x' }
+    { id:'212', name:'北京吉普 212 型', tag:'入门 · 扎实耐造', cost:15, speed:60, acc:50, grip:70, lockLv:1, img:'assets/car-212.jpg' },
+    { id:'cherokee', name:'切诺基型', tag:'中档 · 从容四驱', cost:28, speed:70, acc:62, grip:76, lockLv:1, img:'assets/car-cherokee.jpg', hot:true },
+    { id:'monster', name:'高性能大脚车', tag:'高性能 · 姿态拉满', cost:45, speed:88, acc:75, grip:65, lockLv:6, img:'assets/car-monster.jpg' },
+    { id:'crawler', name:'岩石攀爬车', tag:'攀爬专精 · 陡坡克星', cost:35, speed:55, acc:48, grip:92, lockLv:4, img:'assets/car-rock-crawler.jpg' },
+    { id:'kart', name:'沙漠卡丁车', tag:'竞速型 · 高速漂移', cost:40, speed:92, acc:85, grip:58, lockLv:8, img:'assets/car-kart.jpg' },
+    { id:'beast', name:'越野怪兽', tag:'顶级 · 全地形王者', cost:65, speed:95, acc:80, grip:80, lockLv:12, img:'assets/car-beast.jpg' }
   ];
 
   const mapPoints = [

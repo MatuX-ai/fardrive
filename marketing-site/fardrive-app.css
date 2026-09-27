@@ -177,7 +177,7 @@ b{font-weight:800;}
 }
 .login-hero::before{
   content:"";position:absolute;inset:0;
-  background:url("https://aka.doubaocdn.com/s/NgyWk1rwLk") center/cover no-repeat;opacity:.22;
+  background:url("assets/app-forest-map.jpg") center/cover no-repeat;opacity:.22;
 }
 .login-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,21,38,.4),var(--bg) 92%);}
 .login-hero>*{position:relative;z-index:1;}
