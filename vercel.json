@@ -4,10 +4,6 @@
   "outputDirectory": "marketing-site",
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/admin", "destination": "/admin/index.html" },
-    { "source": "/admin/:path", "destination": "/admin/index.html" },
-    { "source": "/admin/:path/:path2", "destination": "/admin/index.html" },
-    { "source": "/admin/:path/:path2/:path3", "destination": "/admin/index.html" },
-    { "source": "/admin/:path/:path2/:path3/:path4", "destination": "/admin/index.html" }
+    { "source": "/admin(.*)", "destination": "/admin/index.html" }
   ]
 }
